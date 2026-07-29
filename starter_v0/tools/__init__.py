@@ -5,6 +5,9 @@ from typing import Any
 
 import yaml
 
+# Import tool mới: readability
+from .readability.tool import run as readability_run
+
 # Folder names are intentionally vague to match the tool names students see.
 # The imported function names are the underlying implementations (unchanged).
 from .clarify.tool import ask_user
@@ -35,6 +38,7 @@ TOOL_FUNCTIONS = {
     "policy": search_company_policy,
     "papers": arxiv_search,
     "paper_text": get_arxiv_paper_text,
+    "readability": readability_run,
 }
 
 
@@ -51,4 +55,3 @@ def to_openai_tools(declarations: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "parameters": item.get("parameters", {"type": "object", "properties": {}}),
         },
     } for item in declarations]
-
