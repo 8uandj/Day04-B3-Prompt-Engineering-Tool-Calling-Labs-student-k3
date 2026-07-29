@@ -1,0 +1,28 @@
+{
+  "transcript_id": "v3_openai_20260729T230540177585",
+  "version": "v3",
+  "artifact_version": "v3+p5642bf9dd9a4+t6c2e96ba104d",
+  "prompt_hash": "5642bf9dd9a496a988f9d0e104411dce41d6ae9774e34661cb129fd6772286f9",
+  "tools_hash": "6c2e96ba104dbc3ddb1ef67e0cd2b8171f744642ee37ea15179ec57fa11b8322",
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "system_prompt": "/home/hung8uandj/Study/AI_VIN/Lab/Day04-B3-Prompt-Engineering-Tool-Calling-Labs-student-k3/starter_v0/artifacts/system_prompt.md",
+  "tools": "/home/hung8uandj/Study/AI_VIN/Lab/Day04-B3-Prompt-Engineering-Tool-Calling-Labs-student-k3/starter_v0/artifacts/tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "created_at": "2026-07-29T23:05:40",
+  "updated_at": "2026-07-29T23:05:40",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-07-29T23:05:40",
+      "user": "tôi cần bạn đưa ra 3 bài báo về bệnh béo phì",
+      "status": "provider_error",
+      "assistant_text": null,
+      "rounds": [],
+      "tool_events": [],
+      "error": "RuntimeError: Install live provider dependency first: pip install openai",
+      "ended_at": "2026-07-29T23:05:40"
+    }
+  ]
+}

@@ -246,6 +246,29 @@ def summarize(results: list[dict[str, Any]]) -> dict[str, Any]:
             observed_mismatch_counts[observed_mismatch] = observed_mismatch_counts.get(observed_mismatch, 0) + 1
     summary["failure_counts"] = failure_counts
     summary["observed_mismatch_counts"] = observed_mismatch_counts
+
+    execution_calls = 0
+    execution_successes = 0
+    execution_errors = 0
+    for item in measured:
+        for event in item.get("tool_results", []):
+            execution_calls += 1
+            payload = event.get("result")
+            has_error = bool(event.get("error")) or (
+                isinstance(payload, dict) and bool(payload.get("error"))
+            )
+            if has_error:
+                execution_errors += 1
+            else:
+                execution_successes += 1
+    summary.update({
+        "tool_execution_calls": execution_calls,
+        "tool_execution_successes": execution_successes,
+        "tool_execution_errors": execution_errors,
+        "tool_execution_success_rate": (
+            round(execution_successes / execution_calls, 4) if execution_calls else None
+        ),
+    })
     return summary
 
 

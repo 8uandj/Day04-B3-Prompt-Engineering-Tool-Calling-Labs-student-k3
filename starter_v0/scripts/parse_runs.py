@@ -18,8 +18,43 @@ def first_expected_tool(expect: dict[str, Any]) -> str:
     return "|".join(call.get("name", "") for call in calls)
 
 
+def execution_details(tool_results: list[dict[str, Any]]) -> tuple[str, int, int, str]:
+    if not tool_results:
+        return "not_called", 0, 0, ""
+
+    details: list[dict[str, Any]] = []
+    success_count = 0
+    error_count = 0
+    for event in tool_results:
+        payload = event.get("result")
+        wrapper_error = event.get("error")
+        payload_error = payload.get("error") if isinstance(payload, dict) else None
+        error = wrapper_error or payload_error
+        if error:
+            error_count += 1
+        else:
+            success_count += 1
+        details.append({
+            "tool": event.get("tool"),
+            "status": "error" if error else "success",
+            "error": error or "",
+            "message": payload.get("message", "") if isinstance(payload, dict) else "",
+        })
+
+    if error_count and success_count:
+        status = "mixed"
+    elif error_count:
+        status = "error"
+    else:
+        status = "success"
+    return status, success_count, error_count, json.dumps(details, ensure_ascii=False)
+
+
 def row_for(run: dict[str, Any], result_item: dict[str, Any]) -> dict[str, Any]:
     result = result_item["result"]
+    execution_status, execution_success_count, execution_error_count, execution_detail = execution_details(
+        result_item.get("tool_results") or []
+    )
     return {
         "run_id": run.get("run_id"),
         "version": run.get("version"),
@@ -34,6 +69,10 @@ def row_for(run: dict[str, Any], result_item: dict[str, Any]) -> dict[str, Any]:
         "passed": result.get("passed"),
         "routing_correct": result.get("routing_correct"),
         "args_correct": result.get("args_correct"),
+        "execution_status": execution_status,
+        "execution_success_count": execution_success_count,
+        "execution_error_count": execution_error_count,
+        "execution_detail": execution_detail,
         "failures": "; ".join(result.get("failures") or []),
     }
 
@@ -63,7 +102,8 @@ def main() -> None:
     fieldnames = [
         "run_id", "version", "artifact_version", "suite", "case_id", "is_multiturn",
         "case_failure_type", "observed_mismatch", "expected_tool", "actual_tool",
-        "passed", "routing_correct", "args_correct", "failures",
+        "passed", "routing_correct", "args_correct", "execution_status",
+        "execution_success_count", "execution_error_count", "execution_detail", "failures",
     ]
 
     if args.output:
@@ -84,4 +124,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
