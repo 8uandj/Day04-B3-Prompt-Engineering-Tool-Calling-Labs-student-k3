@@ -1,10 +1,9 @@
-import { AnimatePresence, motion } from "motion/react";
 import { Braces, Check, ChevronDown, CircleAlert, Cpu, LoaderCircle, Route } from "lucide-react";
 import { useState } from "react";
 import type { Copy } from "../i18n";
 import type { Session, StreamEvent } from "../types";
 
-function JsonDetail({ label, value }: { label: string; value: unknown }) { const [open, setOpen] = useState(false); return <div className="json-detail"><button onClick={() => setOpen(!open)}><Braces size={15}/>{label}<ChevronDown className={open ? "rotated" : ""} size={15}/></button><AnimatePresence>{open && <motion.pre initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}>{JSON.stringify(value, null, 2)}</motion.pre>}</AnimatePresence></div> }
+function JsonDetail({ label, value }: { label: string; value: unknown }) { const [open, setOpen] = useState(false); return <div className="json-detail"><button onClick={() => setOpen(!open)}><Braces size={15}/>{label}<ChevronDown className={open ? "rotated" : ""} size={15}/></button>{open && <pre>{JSON.stringify(value, null, 2)}</pre>}</div> }
 
 export function TracePanel({ copy, session, live }: { copy: Copy; session: Session | null; live: StreamEvent[] }) {
   const rounds = session?.turns.flatMap((turn) => turn.rounds.map((round) => ({ ...round, turn: turn.turn_index }))) ?? [];
@@ -12,9 +11,9 @@ export function TracePanel({ copy, session, live }: { copy: Copy; session: Sessi
   const events = [...savedEvents, ...live.filter((event) => ["round_started", "tool_started", "tool_completed", "tool_failed", "clarification_required"].includes(event.type))];
   return <section className="workspace-panel trace-panel"><header className="panel-heading"><div><Route/><span>{copy.trace}</span></div><span className="event-count">{events.length}</span></header><div className="trace-scroll">{events.length === 0 ? <div className="empty-state"><div className="empty-icon"><Cpu/></div><h2>{copy.emptyTrace}</h2><p>{copy.emptyTraceHint}</p></div> : <div className="timeline">{events.map((event, index) => {
     const failed = event.type === "tool_failed"; const running = event.type === "tool_started" || event.type === "round_started";
-    return <motion.article className={`event-card ${failed ? "event-card--failed" : ""}`} key={`${event.turn_index}-${event.round}-${event.type}-${index}`} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
+    return <article className={`event-card ${failed ? "event-card--failed" : ""}`} key={`${event.turn_index}-${event.round}-${event.type}-${index}`}>
       <div className={`event-node ${failed ? "event-node--failed" : running ? "event-node--running" : ""}`}>{failed ? <CircleAlert/> : running ? <LoaderCircle className="spin"/> : <Check/>}</div>
       <div className="event-body"><div className="event-header"><strong>{event.tool ?? (event.type === "round_started" ? `Round ${event.round}` : event.type)}</strong><span>T{event.turn_index} · R{event.round ?? "–"}</span></div><small>{event.type.replaceAll("_", " ")}</small>
       {event.args && <JsonDetail label={copy.arguments} value={event.args}/>} {event.result !== undefined && <JsonDetail label={copy.result} value={event.result}/>}</div>
-    </motion.article>})}</div>}</div></section>;
+    </article>})}</div>}</div></section>;
 }

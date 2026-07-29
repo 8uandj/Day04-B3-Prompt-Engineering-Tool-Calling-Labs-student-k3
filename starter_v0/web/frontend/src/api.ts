@@ -20,13 +20,10 @@ export async function streamMessage(id: string, content: string, onEvent: (event
     const { value, done } = await reader.read();
     if (done) break;
     buffer += decoder.decode(value, { stream: true });
-    const blocks = buffer.split("
-
-");
+    const blocks = buffer.split("\\n\\n");
     buffer = blocks.pop() ?? "";
     for (const block of blocks) {
-      const payload = block.split("
-").filter((line) => line.startsWith("data:" )).map((line) => line.slice(5).trim()).join("");
+      const payload = block.split("\\n").filter((line) => line.startsWith("data:")).map((line) => line.slice(5).trim()).join("");
       if (payload) onEvent(JSON.parse(payload) as StreamEvent);
     }
   }
