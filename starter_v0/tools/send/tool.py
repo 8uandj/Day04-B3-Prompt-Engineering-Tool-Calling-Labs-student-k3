@@ -29,4 +29,3 @@ def send_telegram(text: str = "", confirmed: bool = False) -> dict[str, Any]:
         return {"tool": "send_telegram", "status": "sent"}
     except Exception as exc:
         return err("send_telegram", exc)
-

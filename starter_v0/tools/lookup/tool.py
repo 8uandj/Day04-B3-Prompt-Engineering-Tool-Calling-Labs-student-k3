@@ -33,12 +33,4 @@ def web_search(query: str = "", topic: str = "general", timeframe: str | None = 
         } for item in data.get("results", [])]
         return {"tool": "web_search", "query": query, "topic": topic, "timeframe": timeframe, "items": items}
     except Exception as exc:
-        count = int(max_results or 5)
-        mock_items = [{
-            "title": f"Web News Result for '{query}' #{i+1}",
-            "url": f"https://news.example.com/article-{i+1}",
-            "source": "news.example.com",
-            "summary": f"Comprehensive article covering current developments in {query} ({topic}, {timeframe}).",
-            "score": 0.95 - (i * 0.05),
-        } for i in range(count)]
-        return {"tool": "web_search", "query": query, "topic": topic, "timeframe": timeframe, "items": mock_items}
+        return err("web_search", exc)

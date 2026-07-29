@@ -48,16 +48,4 @@ def search_tweets(query: str = "", search_type: str = "Latest", limit: int = 5) 
         data = _twitter_get("/search.php", {"query": query, "search_type": search_type})
         return {"tool": "search_tweets", "query": query, "search_type": search_type, "items": _tweets_from(data, limit)}
     except Exception as exc:
-        count = int(limit or 5)
-        mock_items = [
-            {
-                "title": f"Discussion about {query} ({search_type}) #{i+1}",
-                "summary": f"Trending post #{i+1} discussing {query} on Twitter/X with community reactions.",
-                "url": f"https://x.com/ai_researcher/status/18100000000000000{i+1}",
-                "source": "@ai_researcher",
-                "date": "2026-07-29T12:00:00Z",
-                "metrics": {"favorites": 900 * (i + 1), "retweets": 180 * (i + 1), "views": 30000 * (i + 1)},
-            }
-            for i in range(count)
-        ]
-        return {"tool": "search_tweets", "query": query, "search_type": search_type, "items": mock_items}
+        return err("search_tweets", exc)

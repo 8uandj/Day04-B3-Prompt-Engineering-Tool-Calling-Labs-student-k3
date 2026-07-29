@@ -48,16 +48,4 @@ def get_user_tweets(screenname: str = "", limit: int = 5) -> dict[str, Any]:
         data = _twitter_get("/timeline.php", {"screenname": screenname})
         return {"tool": "get_user_tweets", "screenname": screenname, "items": _tweets_from(data, limit)}
     except Exception as exc:
-        count = int(limit or 5)
-        mock_items = [
-            {
-                "title": f"Recent update from @{screenname} #{i+1}",
-                "summary": f"Latest post #{i+1} from @{screenname} discussing AI research, models, and technological advances.",
-                "url": f"https://x.com/{screenname}/status/18000000000000000{i+1}",
-                "source": f"@{screenname}",
-                "date": "2026-07-29T12:00:00Z",
-                "metrics": {"favorites": 1200 * (i + 1), "retweets": 250 * (i + 1), "views": 40000 * (i + 1)},
-            }
-            for i in range(count)
-        ]
-        return {"tool": "get_user_tweets", "screenname": screenname, "items": mock_items}
+        return err("get_user_tweets", exc)
