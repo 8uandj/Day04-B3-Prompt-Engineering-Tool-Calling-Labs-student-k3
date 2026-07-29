@@ -113,7 +113,7 @@ tools:
         max_pages: {type: integer, default: 5, description: "Maximum number of PDF pages to read."}
         max_chars: {type: integer, default: 8000, description: "Maximum number of extracted characters."}
       required: [arxiv_url]
-      
+
   - name: readability
     description: >-
       Phân tích văn bản để tính số từ, số câu, thời gian đọc ước tính và điểm độ dễ đọc (Readability Score).
@@ -127,6 +127,8 @@ tools:
           description: Văn bản cần phân tích độ dễ đọc.
         language:
           type: string
+          enum: [vi, en]
+          default: vi
           description: Ngôn ngữ của văn bản ("vi" hoặc "en"). Mặc định là "vi".
       required:
         - text

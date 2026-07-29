@@ -1,18 +1,21 @@
-import json
 import re
+from typing import Any
 
-def run(text: str, language: str = "vi") -> str:
+
+def run(text: str, language: str = "vi") -> dict[str, Any]:
     """
     Phân tích văn bản và trả về thông số độ dễ đọc.
     Xử lý an toàn các trường hợp text rỗng hoặc không đủ dữ liệu.
     """
     # 1. Kiểm tra dữ liệu đầu vào rỗng hoặc không hợp lệ
     if not text or not text.strip():
-        return json.dumps({
+        return {
+            "tool": "readability",
             "status": "error",
+            "error": "ValueError",
             "error_code": "EMPTY_INPUT",
             "message": "Văn bản đầu vào rỗng, không thể phân tích độ dễ đọc."
-        }, ensure_ascii=False)
+        }
 
     cleaned_text = text.strip()
     words = re.findall(r'\w+', cleaned_text)
@@ -20,11 +23,12 @@ def run(text: str, language: str = "vi") -> str:
 
     # 2. Kiểm tra không đủ dữ liệu (ít hơn 5 từ)
     if word_count < 5:
-        return json.dumps({
+        return {
+            "tool": "readability",
             "status": "insufficient_data",
             "word_count": word_count,
             "message": "Văn bản quá ngắn (dưới 5 từ). Cần cung cấp thêm nội dung để phân tích chính xác."
-        }, ensure_ascii=False)
+        }
 
     # Tách câu đơn giản bằng các dấu chấm, chấm hỏi, chấm cảm
     sentences = [s.strip() for s in re.split(r'[.!?]+', cleaned_text) if s.strip()]
@@ -45,7 +49,8 @@ def run(text: str, language: str = "vi") -> str:
     else:
         assessment = "Khó đọc, câu quá dài hoặc phức tạp. Nên chia nhỏ câu."
 
-    return json.dumps({
+    return {
+        "tool": "readability",
         "status": "success",
         "data": {
             "word_count": word_count,
@@ -55,4 +60,4 @@ def run(text: str, language: str = "vi") -> str:
             "readability_score": readability_score,
             "assessment": assessment
         }
-    }, ensure_ascii=False)
+    }
