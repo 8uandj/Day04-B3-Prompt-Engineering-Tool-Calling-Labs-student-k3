@@ -1,0 +1,679 @@
+{
+  "run_id": "v3_B_group_openai_20260729T160026154305",
+  "version": "v3",
+  "artifact_version": "v3+pc5a8660f9081+t6c2e96ba104d",
+  "prompt_hash": "c5a8660f9081beba216bcb9602e2c79f1e37f58491a465931bc7bdc8b9d025f6",
+  "tools_hash": "6c2e96ba104dbc3ddb1ef67e0cd2b8171f744642ee37ea15179ec57fa11b8322",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "system_prompt": "/Users/sethehung/Documents/aithucchien_vinuni/Lab/Lab_04/Day04-B3-Prompt-Engineering-Tool-Calling-Labs-student-k3/starter_v0/artifacts/system_prompt.md",
+  "tools": "/Users/sethehung/Documents/aithucchien_vinuni/Lab/Lab_04/Day04-B3-Prompt-Engineering-Tool-Calling-Labs-student-k3/starter_v0/artifacts/tools.yaml",
+  "eval_cases": "data/eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Bộ eval chuyên sâu gồm đúng 10 case do nhóm tự thiết kế: 5 single-turn và 5 multi-turn. Bộ case cân bằng 5 failure type trọng tâm, kiểm tra routing, subset arguments, carry-over/correction, confirmation boundary và multi-source fan-out.",
+  "generated_at": "2026-07-29T16:00:26",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 8,
+    "case_accuracy": 0.8,
+    "tool_routing_accuracy": 0.8,
+    "argument_accuracy": 0.8,
+    "multiturn_accuracy": 0.6,
+    "failure_counts": {
+      "wrong_arg_value": 1,
+      "missing_info": 1
+    },
+    "observed_mismatch_counts": {
+      "extra_tool_call": 1,
+      "missing_tool_call": 1
+    },
+    "tool_execution_calls": 10,
+    "tool_execution_successes": 2,
+    "tool_execution_errors": 8,
+    "tool_execution_success_rate": 0.2
+  },
+  "results": [
+    {
+      "id": "G01_single_account_vs_topic",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "account_timeline_disambiguation",
+        "difficulty": "medium",
+        "what_it_tests": "Phân biệt bài đăng CỦA một tài khoản với tìm kiếm bài đăng THEO CHỦ ĐỀ; phải chọn timeline và map Andrej Karpathy thành handle karpathy."
+      },
+      "input": "Lấy 4 bài đăng mới nhất của Andrej Karpathy, không tìm bài viết của người khác nhắc đến ông ấy.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "karpathy",
+            "limit": 4
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_single_top_social_args",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "social_search_compound_args",
+        "difficulty": "medium",
+        "what_it_tests": "Trích đồng thời query, search_type=Top và limit=8; không được dùng default Latest hoặc limit=5."
+      },
+      "input": "Tìm đúng 8 bài đăng nổi bật nhất về open-source LLM trên mạng xã hội.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "open-source LLM",
+              "search_type": "Top",
+              "limit": 8
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "open-source LLM",
+              "search_type": "Top",
+              "limit": 8
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "open-source LLM",
+            "search_type": "Top",
+            "limit": 8
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_single_meta_no_tool",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "meta_question_no_tool",
+        "difficulty": "easy",
+        "what_it_tests": "Câu hỏi về khả năng của agent đã nói rõ không cần tra cứu; phải trả lời trực tiếp và không gọi tool."
+      },
+      "input": "Giải thích ngắn gọn khi nào bạn dùng timeline và khi nào dùng social_search. Không cần tra cứu.",
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi sẽ sử dụng `timeline` khi cần tra cứu bài đăng hoặc tweet từ một tài khoản cá nhân cụ thể đã biết, như Sam Altman hay Elon Musk. Ngược lại, tôi sẽ dùng `social_search` khi tìm kiếm thảo luận, xu hướng hoặc phản ứng của cộng đồng về một chủ đề, sản phẩm hoặc từ khóa mà không cần xác định tài khoản cụ thể.",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G04_single_missing_comparison_urls",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_missing_multiple_urls",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu đọc hai bài nhưng không cung cấp URL; phải hỏi xin các link, không tự đoán URL và không gọi fetch."
+      },
+      "input": "Đọc hai bài viết này rồi so sánh các kết luận chính giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có thể cung cấp URL hoặc tiêu đề của hai bài viết mà bạn muốn tôi đọc và so sánh không?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có thể cung cấp URL hoặc tiêu đề của hai bài viết mà bạn muốn tôi đọc và so sánh không?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có thể cung cấp URL hoặc tiêu đề của hai bài viết mà bạn muốn tôi đọc và so sánh không?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_single_send_confirmation",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "confirmation_before_side_effect",
+        "difficulty": "medium",
+        "what_it_tests": "Nội dung đã rõ nhưng chưa có xác nhận riêng cho hành động gửi; phải hỏi yes/no trước và không gọi send."
+      },
+      "input": "Gửi nguyên văn nội dung “Bản tin AI đã sẵn sàng” lên Telegram ngay giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có xác nhận muốn gửi nội dung \"Bản tin AI đã sẵn sàng\" lên Telegram không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có xác nhận muốn gửi nội dung \"Bản tin AI đã sẵn sàng\" lên Telegram không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có xác nhận muốn gửi nội dung \"Bản tin AI đã sẵn sàng\" lên Telegram không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multi_two_source_fanout",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_multi_source_tool_fanout",
+        "difficulty": "hard",
+        "what_it_tests": "Carry chủ đề và timeframe qua các lượt, rồi gọi đủ hai tool cho hai nguồn. Đây là multi-tool fan-out/tool-chain proxy; grader không phụ thuộc thứ tự call."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tôi đang theo dõi chủ đề AI agents."
+        },
+        {
+          "role": "user",
+          "content": "Ưu tiên thông tin trong hôm nay."
+        },
+        {
+          "role": "user",
+          "content": "Hãy tìm cả tin tức trên web lẫn bài đăng mạng xã hội về chủ đề đó."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI agents",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI agents"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI agents",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI agents"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "AI agents",
+            "topic": "news",
+            "timeframe": "day"
+          },
+          "result": {
+            "tool": "web_search",
+            "error": "RuntimeError",
+            "message": "Missing TAVILY_API_KEY env var"
+          }
+        },
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "AI agents"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multi_corrected_web_args",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_multiple_arg_corrections",
+        "difficulty": "hard",
+        "what_it_tests": "Áp dụng các correction mới nhất cho max_results 10→4 và timeframe week→month, đồng thời giữ query và topic từ ngữ cảnh."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm 10 tin về chip AI trong tuần này."
+        },
+        {
+          "role": "user",
+          "content": "Đổi lại: chỉ lấy 4 kết quả."
+        },
+        {
+          "role": "user",
+          "content": "Và đổi khoảng thời gian thành tháng này, vẫn là tin về chip AI."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "chip AI",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "chip AI",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 4
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "chip AI",
+              "limit": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "extra_tool_call",
+        "failure_type": "wrong_arg_value",
+        "failures": [
+          "extra tool call social_search"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "chip AI",
+            "topic": "news",
+            "timeframe": "month",
+            "max_results": 4
+          },
+          "result": {
+            "tool": "web_search",
+            "error": "RuntimeError",
+            "message": "Missing TAVILY_API_KEY env var"
+          }
+        },
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "chip AI",
+            "limit": 4
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multi_cancelled_request",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_cancellation_no_tool",
+        "difficulty": "medium",
+        "what_it_tests": "Latest intent hủy bỏ yêu cầu cũ; không được thực hiện tool call còn sót lại từ lượt đầu."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin mới nhất về quantum computing."
+        },
+        {
+          "role": "user",
+          "content": "Khoan, hủy yêu cầu tìm kiếm đó."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xác nhận là bạn đã hiểu, đừng gọi bất kỳ tool nào."
+        }
+      ],
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi đã hiểu yêu cầu của bạn.",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G09_multi_still_missing_handle",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_unresolved_required_field",
+        "difficulty": "hard",
+        "what_it_tests": "Dù đã có limit=5 và người dùng thúc giục, tài khoản/handle vẫn thiếu; phải hỏi lại thay vì đoán người nổi tiếng."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt các bài đăng mới nhất giúp mình."
+        },
+        {
+          "role": "user",
+          "content": "Lấy đúng 5 bài."
+        },
+        {
+          "role": "user",
+          "content": "Bắt đầu đi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": "missing_tool_call",
+        "failure_type": "missing_info",
+        "failures": [
+          "missing tool call clarify",
+          "extra tool call timeline"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 5
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multi_confirmation_carryover",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_explicit_confirmation_carryover",
+        "difficulty": "hard",
+        "what_it_tests": "Sau xác nhận rõ ràng ở lượt cuối, carry đúng nội dung từ lượt đầu và gọi send với confirmed=true; không hỏi xác nhận lặp lại."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Chuẩn bị gửi lên Telegram nội dung: Bản tin tuần này đã hoàn tất."
+        },
+        {
+          "role": "user",
+          "content": "Bạn cần tôi xác nhận trước đúng không?"
+        },
+        {
+          "role": "user",
+          "content": "Đúng, tôi xác nhận gửi chính xác nội dung đó ngay bây giờ."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "text": "Bản tin tuần này đã hoàn tất.",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "text": "Bản tin tuần này đã hoàn tất.",
+              "confirmed": true
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "send",
+          "args": {
+            "text": "Bản tin tuần này đã hoàn tất.",
+            "confirmed": true
+          },
+          "result": {
+            "tool": "send_telegram",
+            "error": "RuntimeError",
+            "message": "Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env var"
+          }
+        }
+      ]
+    }
+  ]
+}
