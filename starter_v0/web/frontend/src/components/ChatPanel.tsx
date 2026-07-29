@@ -7,7 +7,7 @@ const MarkdownContent = lazy(() => import("./MarkdownContent"));
 
 export function ChatPanel({ copy, session, busy, pending, onSend }: { copy: Copy; session: Session | null; busy: boolean; pending: string; onSend: (message: string) => Promise<void> }) {
   const [value, setValue] = useState(""); const turns = session?.turns ?? []; const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [turns.length, pending, busy]);
+  useEffect(() => { const element = scrollRef.current; if (!element) return; if (typeof element.scrollTo === "function") element.scrollTo({ top: element.scrollHeight, behavior: "smooth" }); else element.scrollTop = element.scrollHeight; }, [turns.length, pending, busy]);
   const submit = async (event: FormEvent) => { event.preventDefault(); const content = value.trim(); if (!content || busy) return; setValue(""); await onSend(content); };
   return <section className="workspace-panel chat-panel"><header className="panel-heading"><div><MessageSquareText/><span>{copy.chat}</span></div><span className={`connection ${busy ? "connection--live" : ""}`}>{busy ? copy.connected : copy.ready}</span></header>
     <div className="chat-scroll" ref={scrollRef}>{turns.length === 0 && !pending ? <div className="empty-state"><div className="empty-icon"><Bot/></div><h2>{copy.emptyChat}</h2><p>{copy.emptyChatHint}</p></div> : turns.map((turn) => <div className="turn" key={turn.turn_index}>

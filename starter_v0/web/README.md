@@ -10,21 +10,15 @@ UI chính của lab dùng React + TypeScript; FastAPI phục vụ API, SSE tool 
 
 ## Chạy development
 
-Terminal 1, từ `starter_v0/`:
+`npm run dev` tự kiểm tra/sửa dependencies trong `.venv`, sau đó khởi động đồng thời FastAPI và Vite:
 
 ```bash
-./.venv/bin/python -m uvicorn web.backend.main:app --reload
-```
-
-Terminal 2:
-
-```bash
-cd web/frontend
+cd starter_v0/web/frontend
 npm install
 npm run dev
 ```
 
-Mở `http://localhost:5173`. Vite proxy `/api` sang FastAPI tại cổng 8000.
+Mở `http://localhost:5173`. Muốn chỉ chạy Vite khi backend đã có sẵn, dùng `npm run dev:ui`.
 
 ## Chạy production / demo một URL
 

@@ -4,11 +4,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently --kill-others -n API,UI -c blue,red \"cd ../.. && ./.venv/bin/python web/backend/dev_server.py\" \"vite\"",
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "preview": "vite preview",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "dev:ui": "vite"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -28,6 +29,7 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^4.4.0",
+    "concurrently": "^10.0.4",
     "jsdom": "^26.1.0",
     "tailwindcss": "^4.1.0",
     "typescript": "~5.8.3",
