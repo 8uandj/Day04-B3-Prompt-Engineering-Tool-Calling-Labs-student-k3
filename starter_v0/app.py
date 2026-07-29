@@ -27,7 +27,7 @@ def apply_theme() -> None:
 .hero{position:relative;overflow:hidden;padding:1.65rem 1.8rem;border-radius:20px;color:#fff;background:linear-gradient(118deg,#00264c,#004f91 66%,#1479b8);box-shadow:0 16px 32px rgba(0,42,84,.18);margin-bottom:1.15rem}.hero:after{content:"";position:absolute;width:230px;height:230px;right:-55px;top:-118px;border:34px solid rgba(255,255,255,.1);border-radius:50%}.eyebrow{color:#a9d9ff;font-size:.73rem;letter-spacing:.13em;font-weight:750;margin-bottom:.35rem}.hero h1{font-size:clamp(1.45rem,3vw,2.25rem);line-height:1.12;margin:0;letter-spacing:-.035em}.hero p{max-width:680px;margin:.65rem 0;color:#d9ecfc}.pill{display:inline-block;margin-top:.75rem;padding:.35rem .66rem;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.1);font:600 .78rem/1 monospace}
 .metric{min-height:92px;padding:1rem;background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 4px 14px rgba(18,48,79,.045);transition:.2s}.metric:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(18,48,79,.11)}.metric-label{color:var(--muted);font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}.metric-value{font-size:1.22rem;font-weight:760;margin-top:.3rem;color:var(--navy)}
 .label{margin:1.35rem 0 .55rem;color:var(--navy);font-size:1rem;font-weight:760}.empty{text-align:center;padding:2.6rem 1rem;border:1px dashed #b6c7d9;border-radius:16px;color:var(--muted);background:rgba(255,255,255,.55)}.trace{margin:.65rem 0;padding:1rem;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:12px;background:#fff;transition:.18s}.trace:hover{transform:translateX(4px);border-left-color:var(--red);box-shadow:0 10px 22px rgba(0,38,76,.08)}.tool{font-family:ui-monospace,monospace;background:#eaf3fa;color:#003b71;padding:.12rem .36rem;border-radius:5px}.meta{color:var(--muted);font-size:.84rem;margin-top:.4rem}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-right:.55rem;box-shadow:0 0 0 4px #fee9ea}
-.stButton>button{border:0;border-radius:9px;background:var(--red);color:#fff;font-weight:700;transition:.18s}.stButton>button:hover{background:#b10f16;transform:translateY(-2px);box-shadow:0 8px 18px rgba(215,25,32,.25)}[data-testid="stChatInput"]{border:1px solid #b8cadc;border-radius:14px;box-shadow:0 6px 18px rgba(0,38,76,.08)}@media(max-width:760px){.block-container{padding:.8rem}.hero{padding:1.3rem;border-radius:14px}}
+.stButton>button{border:0;border-radius:9px;background:var(--red);color:#fff;font-weight:700;transition:.18s}.stButton>button:hover{background:#b10f16;transform:translateY(-2px);box-shadow:0 8px 18px rgba(215,25,32,.25)}[data-testid="stChatInput"],[data-testid="stChatInput"]>div{background:var(--navy)!important;border:1px solid #3676aa!important;border-radius:14px;box-shadow:0 6px 18px rgba(0,38,76,.16)}[data-testid="stChatInput"] textarea,[data-testid="stChatInput"] input,[data-testid="stChatInputTextArea"] textarea{color:#fff!important;caret-color:#fff!important;background:transparent!important}[data-testid="stChatInput"] textarea::placeholder,[data-testid="stChatInputTextArea"] textarea::placeholder{color:#c9deef!important;opacity:1}[data-testid="stChatInput"] button svg{fill:#fff!important}[data-testid="stSidebarCollapsedControl"],[data-testid="stSidebarCollapsedControl"] button,button[aria-label*="sidebar" i],button[title*="sidebar" i]{display:flex!important;position:fixed!important;left:1rem!important;top:auto!important;bottom:1rem!important;z-index:100000!important;background:var(--navy)!important;border:1px solid rgba(255,255,255,.35)!important;border-radius:10px!important;box-shadow:0 8px 22px rgba(0,38,76,.22)!important;color:#fff!important}[data-testid="stSidebarCollapsedControl"] svg,button[aria-label*="sidebar" i] svg,button[title*="sidebar" i] svg{fill:#fff!important}@media(max-width:760px){.block-container{padding:.8rem}.hero{padding:1.3rem;border-radius:14px}}
 </style>""", unsafe_allow_html=True)
 
 
@@ -46,6 +46,31 @@ def save() -> None:
     data = st.session_state.transcript
     if data:
         write_transcript(TRANSCRIPTS / f"{data['transcript_id']}.transcript.json", data)
+
+
+def list_saved_transcripts() -> list[Path]:
+    if not TRANSCRIPTS.exists():
+        return []
+    return sorted(TRANSCRIPTS.glob("*.transcript.json"), key=lambda item: item.stat().st_mtime, reverse=True)
+
+
+def restore_transcript(path: Path) -> None:
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    messages: list[dict[str, str]] = []
+    history: list[dict[str, str]] = []
+    for turn in saved.get("turns", []):
+        user = turn.get("user")
+        answer = turn.get("assistant_text")
+        if user:
+            messages.append({"role": "user", "content": user})
+            history.append({"role": "user", "content": user})
+        if answer:
+            messages.append({"role": "assistant", "content": answer})
+            history.append({"role": "assistant", "content": answer})
+    st.session_state.transcript = saved
+    st.session_state.turns = saved.get("turns", [])
+    st.session_state.messages = messages
+    st.session_state.history = history
 
 
 def inspect_json(label: str, data: Any) -> None:
@@ -97,6 +122,25 @@ active = st.session_state.transcript.get("artifact_version", "Ready to run") if 
 st.markdown(f'<section class="hero"><div class="eyebrow">VINUNIVERSITY · AI LAB DAY 04</div><h1>Research Agent<br>Command Center</h1><p>Run live research conversations, inspect tool decisions, and keep versioned evidence ready for demo.</p><span class="pill">{active}</span></section>', unsafe_allow_html=True)
 for column, (name, value) in zip(st.columns(3), [("Declared tools", len(declarations)), ("Chat turns", len(st.session_state.turns)), ("Tool events", sum(len(t.get("tool_events", [])) for t in st.session_state.turns))]):
     column.markdown(f'<div class="metric"><div class="metric-label">{name}</div><div class="metric-value">{value}</div></div>', unsafe_allow_html=True)
+
+history_col, _ = st.columns((1, 5))
+with history_col:
+    with st.popover("◷ Lịch sử", use_container_width=True):
+        saved_files = list_saved_transcripts()
+        if not saved_files:
+            st.caption("Chưa có phiên chat nào được lưu.")
+        else:
+            st.caption("Chọn một phiên để xem lại chat và tool trace.")
+            for saved_file in saved_files[:12]:
+                try:
+                    saved = json.loads(saved_file.read_text(encoding="utf-8"))
+                    turns_count = len(saved.get("turns", []))
+                    label = f"{saved.get('version', 'draft')} · {turns_count} lượt"
+                    if st.button(label, key=f"history_{saved_file.name}", use_container_width=True):
+                        restore_transcript(saved_file)
+                        st.rerun()
+                except (OSError, json.JSONDecodeError):
+                    st.caption(f"Không thể đọc {saved_file.name}")
 
 chat_col, trace_col = st.columns((1.18, 1), gap="large")
 with chat_col:
