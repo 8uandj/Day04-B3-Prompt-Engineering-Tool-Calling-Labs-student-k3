@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, EyeOff, Languages, Plus, Settings2, X } from "lucide-react";
 import type { Config, Language, Session, SessionSettings, SidebarMode } from "../types";
 import type { Copy } from "../i18n";
@@ -8,8 +7,8 @@ interface Props { config: Config | null; copy: Copy; language: Language; mode: S
 export function Sidebar({ config, copy, language, mode, settings, session, onMode, onSettings, onLanguage, onNew }: Props) {
   const locked = Boolean(session);
   const update = (patch: Partial<SessionSettings>) => onSettings({ ...settings, ...patch });
-  return <AnimatePresence>{mode !== "hidden" && <>
-    <motion.aside className={`sidebar ${mode === "rail" ? "sidebar--rail" : ""}`} initial={{ x: -24, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -40, opacity: 0 }} transition={{ duration: .2 }} aria-label="Application sidebar">
+  return <>{mode !== "hidden" && <>
+    <aside className={`sidebar ${mode === "rail" ? "sidebar--rail" : ""}`} aria-label="Application sidebar">
       <div className="brand"><span className="brand-mark">V</span>{mode === "open" && <div><strong>VIN RESEARCH</strong><small>{copy.subtitle}</small></div>}</div>
       <button className="primary-action" onClick={onNew}><Plus size={18}/>{mode === "open" && copy.newChat}</button>
       {mode === "open" ? <div className="settings-stack">
@@ -26,6 +25,6 @@ export function Sidebar({ config, copy, language, mode, settings, session, onMod
         <button className="desktop-only" onClick={() => onMode(mode === "open" ? "rail" : "open")} title={mode === "open" ? copy.collapse : copy.expand}>{mode === "open" ? <ChevronLeft/> : <ChevronRight/>}{mode === "open" && <span>{copy.collapse}</span>}</button>
         <button onClick={() => onMode("hidden")} title={copy.hide}>{mode === "open" ? <><EyeOff size={18}/><span>{copy.hide}</span></> : <X/>}</button>
       </div>
-    </motion.aside><button className="mobile-overlay" aria-label={copy.close} onClick={() => onMode("hidden")}/>
-  </>}</AnimatePresence>;
+    </aside><button className="mobile-overlay" aria-label={copy.close} onClick={() => onMode("hidden")}/>
+  </>}</>;
 }

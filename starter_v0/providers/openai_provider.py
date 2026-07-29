@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from typing import Any
 
 from providers.base import ModelResponse, ToolCall
@@ -33,7 +34,7 @@ class OpenAIProvider:
         try:
             from openai import OpenAI
         except ImportError as exc:
-            raise RuntimeError("Install live provider dependency first: pip install openai") from exc
+            raise RuntimeError(f"OpenAI SDK is missing from backend interpreter {sys.executable}. Run: {sys.executable} -m pip install openai. Import error: {exc}") from exc
 
         api_key = os.getenv(self.api_key_env)
         if not api_key:

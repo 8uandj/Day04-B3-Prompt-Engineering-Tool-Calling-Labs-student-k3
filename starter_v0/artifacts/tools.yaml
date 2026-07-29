@@ -132,3 +132,35 @@ tools:
           description: Ngôn ngữ của văn bản ("vi" hoặc "en"). Mặc định là "vi".
       required:
         - text
+
+  - name: sentiment
+    description: >
+      Phan tich cam xuc (positive/negative/neutral) cua mot danh sach text
+      hoac bai dang, dung lexicon tu khoa. KHONG dung de tim bai dang moi -
+      goi social_search/timeline truoc. KHONG dung cho cau hoi y kien ca nhan
+      khong lien quan den van ban can do cam xuc.
+    parameters:
+      type: object
+      properties:
+        texts:
+          type: array
+          items:
+            type: string
+          description: Danh sach doan text can phan tich, moi bai dang la 1 phan tu.
+      required: ["texts"]
+
+  - name: summarize
+    description: >
+      Tom tat mot doan text da co san (sau khi fetch/readability/social_search)
+      thanh N cau chinh quan trong nhat, dung extractive summarization. KHONG
+      dung de tim noi dung moi. KHONG dung khi van ban da ngan (duoi 3-4 cau).
+    parameters:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Van ban goc can tom tat.
+        num_sentences:
+          type: integer
+          description: So cau muon giu lai. Default 3.
+      required: ["text"]
