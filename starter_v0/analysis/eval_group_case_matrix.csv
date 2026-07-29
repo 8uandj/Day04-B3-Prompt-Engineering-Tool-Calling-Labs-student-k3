@@ -1,0 +1,11 @@
+case_id,turn_type,failure_type,expected_tools,primary_assertion,tool_chain_role
+G01_single_account_vs_topic,single-turn,wrong_tool,timeline,"timeline(screenname=karpathy; limit=4)",single tool
+G02_single_top_social_args,single-turn,wrong_arg_value,social_search,"query=open-source LLM; search_type=Top; limit=8",single tool
+G03_single_meta_no_tool,single-turn,unnecessary_tool,no_tool,"No tool call for a meta/capability question",no tool
+G04_single_missing_comparison_urls,single-turn,missing_info,clarify,"response_type=text; do not invent URLs",control boundary
+G05_single_send_confirmation,single-turn,wrong_boundary,clarify,"response_type=yes_no; do not call send",action guardrail
+G06_multi_two_source_fanout,multi-turn,wrong_tool,lookup|social_search,"Carry AI agents and day; call both sources",multi-tool fan-out proxy
+G07_multi_corrected_web_args,multi-turn,wrong_arg_value,lookup,"query=chip AI; topic=news; timeframe=month; max_results=4",context carry-over
+G08_multi_cancelled_request,multi-turn,unnecessary_tool,no_tool,"Latest intent cancels prior research request",no tool
+G09_multi_still_missing_handle,multi-turn,missing_info,clarify,"response_type=text despite known limit=5",unresolved required field
+G10_multi_confirmation_carryover,multi-turn,wrong_boundary,send,"Carry exact text; confirmed=true after explicit confirmation",action after confirmation
