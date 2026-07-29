@@ -4,9 +4,7 @@
 
 Phân tích cảm xúc (tích cực / tiêu cực / trung lập) của một đoạn text hoặc
 một danh sách bài đăng (vd kết quả từ `social_search`/`timeline`), dùng
-lexicon từ khóa cảm xúc có sẵn (tiếng Việt + tiếng Anh cơ bản). Không gọi
-API ngoài, không cần API key.
-
+lexicon từ khóa cảm xúc có sẵn (tiếng Việt + tiếng Anh cơ bản). 
 ## Khi nào dùng
 
 - Khi user hỏi "mọi người phản ứng thế nào", "dư luận tích cực hay tiêu
