@@ -1,0 +1,13 @@
+import type { Language } from "./types";
+
+const messages = {
+  vi: {
+    subtitle: "Không gian nghiên cứu có kiểm chứng", newChat: "Cuộc trò chuyện mới", provider: "Nhà cung cấp", version: "Phiên bản artifact", model: "Model tùy chọn", context: "Lượt ngữ cảnh", rounds: "Vòng tool tối đa", settingsLocked: "Cấu hình được khóa trong phiên này", history: "Lịch sử", search: "Tìm trong lịch sử…", noHistory: "Chưa có phiên trò chuyện", restore: "Mở phiên", chat: "Trò chuyện", trace: "Tool trace", emptyChat: "Bắt đầu bằng một câu hỏi nghiên cứu", emptyChatHint: "Câu trả lời và nguồn sẽ xuất hiện tại đây.", emptyTrace: "Chưa có tool event", emptyTraceHint: "Mỗi quyết định gọi tool sẽ được ghi lại theo thời gian thực.", placeholder: "Nhập câu hỏi nghiên cứu…", send: "Gửi", planning: "Agent đang lập kế hoạch…", tools: "Tools", turns: "Lượt chat", events: "Events", ready: "Sẵn sàng", connected: "Đang chạy", failed: "Có lỗi", direct: "Trả lời trực tiếp", arguments: "Arguments", result: "Kết quả", copied: "Đã sao chép", retry: "Thử lại", language: "English", close: "Đóng", expand: "Mở rộng", collapse: "Thu gọn", hide: "Ẩn sidebar", openSidebar: "Mở sidebar", mobileChat: "Chat", mobileTrace: "Trace", loadError: "Không thể tải dữ liệu", streamError: "Kết nối bị gián đoạn. Tin nhắn không được tự động gửi lại để tránh gọi tool hai lần."
+  },
+  en: {
+    subtitle: "Evidence-driven research workspace", newChat: "New conversation", provider: "Provider", version: "Artifact version", model: "Model override", context: "Context turns", rounds: "Max tool rounds", settingsLocked: "Settings are locked for this session", history: "History", search: "Search history…", noHistory: "No saved conversations", restore: "Open session", chat: "Conversation", trace: "Tool trace", emptyChat: "Start with a research question", emptyChatHint: "Answers and sources will appear here.", emptyTrace: "No tool events yet", emptyTraceHint: "Every tool decision will be recorded here in real time.", placeholder: "Ask the research agent…", send: "Send", planning: "Agent is planning…", tools: "Tools", turns: "Turns", events: "Events", ready: "Ready", connected: "Running", failed: "Error", direct: "Direct answer", arguments: "Arguments", result: "Result", copied: "Copied", retry: "Retry", language: "Tiếng Việt", close: "Close", expand: "Expand", collapse: "Collapse", hide: "Hide sidebar", openSidebar: "Open sidebar", mobileChat: "Chat", mobileTrace: "Trace", loadError: "Could not load data", streamError: "Connection interrupted. The message was not resent automatically to avoid duplicate tool calls."
+  }
+} as const;
+
+export type Copy = typeof messages.vi;
+export const copy = (language: Language): Copy => messages[language] as Copy;

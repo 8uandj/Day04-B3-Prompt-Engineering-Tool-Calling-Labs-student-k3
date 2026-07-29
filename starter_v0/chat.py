@@ -5,7 +5,7 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from env_loader import load_lab_env
 from providers import make_provider
@@ -84,12 +84,19 @@ def run_model_tool_loop(
     tools: list[dict[str, Any]],
     model: str | None,
     max_tool_rounds: int,
+    event_callback: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
+    def emit(event_type: str, **payload: Any) -> None:
+        if event_callback is not None:
+            event_callback({"type": event_type, "timestamp": now_iso(), **payload})
+
     working_messages = list(messages)
     rounds: list[dict[str, Any]] = []
     all_tool_events: list[dict[str, Any]] = []
+    emit("turn_started")
 
     for round_index in range(1, max_tool_rounds + 1):
+        emit("round_started", round=round_index)
         response = provider.complete(working_messages, tools, model=model, temperature=0.0)
         calls = response.tool_calls
         round_record: dict[str, Any] = {
@@ -101,6 +108,7 @@ def run_model_tool_loop(
 
         if not calls:
             rounds.append(round_record)
+            emit("assistant_completed", round=round_index, assistant_text=response.text or "", status="answered")
             return {
                 "status": "answered",
                 "assistant_text": response.text or "",
@@ -113,9 +121,13 @@ def run_model_tool_loop(
 
         for call in calls:
             print(f"🔧 {call.name}({json.dumps(call.args, ensure_ascii=False, sort_keys=True)})")
+            emit("tool_started", round=round_index, tool=call.name, args=call.args)
             event = execute_tool_call(call)
             round_record["tool_results"].append(event)
             all_tool_events.append(event)
+            tool_result = event.get("result", {})
+            failed = isinstance(tool_result, dict) and bool(tool_result.get("error"))
+            emit("tool_failed" if failed else "tool_completed", round=round_index, **event)
 
             # Detect the clarification/pause tool by its output flag (rename-proof),
             # not by a hard-coded tool name.
@@ -123,6 +135,8 @@ def run_model_tool_loop(
             if isinstance(result, dict) and result.get("awaiting_user"):
                 question = result.get("question") or call.args.get("question") or "Bạn bổ sung thêm thông tin nhé."
                 rounds.append(round_record)
+                emit("clarification_required", round=round_index, question=question)
+                emit("assistant_completed", round=round_index, assistant_text=question, status="waiting_for_user")
                 return {
                     "status": "waiting_for_user",
                     "assistant_text": question,
@@ -135,9 +149,11 @@ def run_model_tool_loop(
         rounds.append(round_record)
         working_messages.append(tool_results_message(non_clarification_events))
 
+    stopped_text = f"Stopped after {max_tool_rounds} tool rounds. Inspect the transcript for details."
+    emit("assistant_completed", round=max_tool_rounds, assistant_text=stopped_text, status="max_tool_rounds")
     return {
         "status": "max_tool_rounds",
-        "assistant_text": f"Stopped after {max_tool_rounds} tool rounds. Inspect the transcript for details.",
+        "assistant_text": stopped_text,
         "rounds": rounds,
         "tool_events": all_tool_events,
     }
@@ -146,7 +162,9 @@ def run_model_tool_loop(
 def write_transcript(path: Path, transcript: dict[str, Any]) -> None:
     transcript["updated_at"] = now_iso()
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(transcript, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    temporary_path = path.with_name(f".{path.name}.tmp")
+    temporary_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    temporary_path.replace(path)
 
 
 def main() -> None:
