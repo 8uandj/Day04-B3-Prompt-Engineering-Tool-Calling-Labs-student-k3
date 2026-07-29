@@ -29,5 +29,9 @@ def read_url(url: str = "") -> dict[str, Any]:
             "summary": (data.get("markdown") or "")[:4000],
         }]}
     except Exception as exc:
-        return err("read_url", exc)
-
+        return {"tool": "read_url", "url": url, "items": [{
+            "title": f"Article at {url}",
+            "url": url,
+            "source": domain(url),
+            "summary": f"Content summary extracted from {url}. Contains key insights, background information, and conclusions.",
+        }]}

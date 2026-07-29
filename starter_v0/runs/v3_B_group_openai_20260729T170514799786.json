@@ -1,0 +1,1068 @@
+{
+  "run_id": "v3_B_group_openai_20260729T170514799786",
+  "version": "v3",
+  "artifact_version": "v3+p34dc6b16c2a4+t6c2e96ba104d",
+  "prompt_hash": "34dc6b16c2a4668a9352120e911e1bee7c3719cd5d645de691cdae0a6974463f",
+  "tools_hash": "6c2e96ba104dbc3ddb1ef67e0cd2b8171f744642ee37ea15179ec57fa11b8322",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "system_prompt": "/Users/sethehung/Documents/aithucchien_vinuni/Lab/Lab_04/Day04-B3-Prompt-Engineering-Tool-Calling-Labs-student-k3/starter_v0/artifacts/system_prompt.md",
+  "tools": "/Users/sethehung/Documents/aithucchien_vinuni/Lab/Lab_04/Day04-B3-Prompt-Engineering-Tool-Calling-Labs-student-k3/starter_v0/artifacts/tools.yaml",
+  "eval_cases": "data/eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Bộ eval chuyên sâu gồm đúng 10 case do nhóm tự thiết kế: 5 single-turn và 5 multi-turn. Bộ case cân bằng 5 failure type trọng tâm, kiểm tra routing, subset arguments, carry-over/correction, confirmation boundary và multi-source fan-out.",
+  "generated_at": "2026-07-29T17:05:14",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 8,
+    "case_accuracy": 0.8,
+    "tool_routing_accuracy": 0.8,
+    "argument_accuracy": 0.8,
+    "multiturn_accuracy": 0.6,
+    "failure_counts": {
+      "wrong_arg_value": 1,
+      "missing_info": 1
+    },
+    "observed_mismatch_counts": {
+      "extra_tool_call": 1,
+      "missing_tool_call": 1
+    },
+    "tool_execution_calls": 10,
+    "tool_execution_successes": 9,
+    "tool_execution_errors": 1,
+    "tool_execution_success_rate": 0.9
+  },
+  "results": [
+    {
+      "id": "G01_single_account_vs_topic",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "account_timeline_disambiguation",
+        "difficulty": "medium",
+        "what_it_tests": "Phân biệt bài đăng CỦA một tài khoản với tìm kiếm bài đăng THEO CHỦ ĐỀ; phải chọn timeline và map Andrej Karpathy thành handle karpathy."
+      },
+      "input": "Lấy 4 bài đăng mới nhất của Andrej Karpathy, không tìm bài viết của người khác nhắc đến ông ấy.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "karpathy",
+            "limit": 4
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "karpathy",
+            "items": [
+              {
+                "title": "Recent update from @karpathy #1",
+                "summary": "Latest post #1 from @karpathy discussing AI research, models, and technological advances.",
+                "url": "https://x.com/karpathy/status/180000000000000001",
+                "source": "@karpathy",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 1200,
+                  "retweets": 250,
+                  "views": 40000
+                }
+              },
+              {
+                "title": "Recent update from @karpathy #2",
+                "summary": "Latest post #2 from @karpathy discussing AI research, models, and technological advances.",
+                "url": "https://x.com/karpathy/status/180000000000000002",
+                "source": "@karpathy",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 2400,
+                  "retweets": 500,
+                  "views": 80000
+                }
+              },
+              {
+                "title": "Recent update from @karpathy #3",
+                "summary": "Latest post #3 from @karpathy discussing AI research, models, and technological advances.",
+                "url": "https://x.com/karpathy/status/180000000000000003",
+                "source": "@karpathy",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 3600,
+                  "retweets": 750,
+                  "views": 120000
+                }
+              },
+              {
+                "title": "Recent update from @karpathy #4",
+                "summary": "Latest post #4 from @karpathy discussing AI research, models, and technological advances.",
+                "url": "https://x.com/karpathy/status/180000000000000004",
+                "source": "@karpathy",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 4800,
+                  "retweets": 1000,
+                  "views": 160000
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_single_top_social_args",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "social_search_compound_args",
+        "difficulty": "medium",
+        "what_it_tests": "Trích đồng thời query, search_type=Top và limit=8; không được dùng default Latest hoặc limit=5."
+      },
+      "input": "Tìm đúng 8 bài đăng nổi bật nhất về open-source LLM trên mạng xã hội.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "open-source LLM",
+              "search_type": "Top",
+              "limit": 8
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "open-source LLM",
+              "search_type": "Top",
+              "limit": 8
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "open-source LLM",
+            "search_type": "Top",
+            "limit": 8
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "open-source LLM",
+            "search_type": "Top",
+            "items": [
+              {
+                "title": "Discussion about open-source LLM (Top) #1",
+                "summary": "Trending post #1 discussing open-source LLM on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000001",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 900,
+                  "retweets": 180,
+                  "views": 30000
+                }
+              },
+              {
+                "title": "Discussion about open-source LLM (Top) #2",
+                "summary": "Trending post #2 discussing open-source LLM on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000002",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 1800,
+                  "retweets": 360,
+                  "views": 60000
+                }
+              },
+              {
+                "title": "Discussion about open-source LLM (Top) #3",
+                "summary": "Trending post #3 discussing open-source LLM on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000003",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 2700,
+                  "retweets": 540,
+                  "views": 90000
+                }
+              },
+              {
+                "title": "Discussion about open-source LLM (Top) #4",
+                "summary": "Trending post #4 discussing open-source LLM on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000004",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 3600,
+                  "retweets": 720,
+                  "views": 120000
+                }
+              },
+              {
+                "title": "Discussion about open-source LLM (Top) #5",
+                "summary": "Trending post #5 discussing open-source LLM on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000005",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 4500,
+                  "retweets": 900,
+                  "views": 150000
+                }
+              },
+              {
+                "title": "Discussion about open-source LLM (Top) #6",
+                "summary": "Trending post #6 discussing open-source LLM on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000006",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 5400,
+                  "retweets": 1080,
+                  "views": 180000
+                }
+              },
+              {
+                "title": "Discussion about open-source LLM (Top) #7",
+                "summary": "Trending post #7 discussing open-source LLM on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000007",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 6300,
+                  "retweets": 1260,
+                  "views": 210000
+                }
+              },
+              {
+                "title": "Discussion about open-source LLM (Top) #8",
+                "summary": "Trending post #8 discussing open-source LLM on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000008",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 7200,
+                  "retweets": 1440,
+                  "views": 240000
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_single_meta_no_tool",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "meta_question_no_tool",
+        "difficulty": "easy",
+        "what_it_tests": "Câu hỏi về khả năng của agent đã nói rõ không cần tra cứu; phải trả lời trực tiếp và không gọi tool."
+      },
+      "input": "Giải thích ngắn gọn khi nào bạn dùng timeline và khi nào dùng social_search. Không cần tra cứu.",
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi sẽ sử dụng `timeline` khi cần tra cứu bài đăng hoặc tweet từ một tài khoản cá nhân cụ thể đã biết, như Sam Altman hay Elon Musk. Ngược lại, tôi sẽ dùng `social_search` khi tìm kiếm thảo luận, xu hướng hoặc phản ứng cộng đồng về một chủ đề, sản phẩm hoặc từ khóa mà không cần biết tài khoản cụ thể.",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G04_single_missing_comparison_urls",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_missing_multiple_urls",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu đọc hai bài nhưng không cung cấp URL; phải hỏi xin các link, không tự đoán URL và không gọi fetch."
+      },
+      "input": "Đọc hai bài viết này rồi so sánh các kết luận chính giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có thể cung cấp URL hoặc tiêu đề của hai bài viết mà bạn muốn tôi đọc và so sánh không?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có thể cung cấp URL hoặc tiêu đề của hai bài viết mà bạn muốn tôi đọc và so sánh không?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có thể cung cấp URL hoặc tiêu đề của hai bài viết mà bạn muốn tôi đọc và so sánh không?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_single_send_confirmation",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "confirmation_before_side_effect",
+        "difficulty": "medium",
+        "what_it_tests": "Nội dung đã rõ nhưng chưa có xác nhận riêng cho hành động gửi; phải hỏi yes/no trước và không gọi send."
+      },
+      "input": "Gửi nguyên văn nội dung “Bản tin AI đã sẵn sàng” lên Telegram ngay giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có chắc chắn muốn gửi nội dung \"Bản tin AI đã sẵn sàng\" lên Telegram không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có chắc chắn muốn gửi nội dung \"Bản tin AI đã sẵn sàng\" lên Telegram không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có chắc chắn muốn gửi nội dung \"Bản tin AI đã sẵn sàng\" lên Telegram không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multi_two_source_fanout",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_multi_source_tool_fanout",
+        "difficulty": "hard",
+        "what_it_tests": "Carry chủ đề và timeframe qua các lượt, rồi gọi đủ hai tool cho hai nguồn. Đây là multi-tool fan-out/tool-chain proxy; grader không phụ thuộc thứ tự call."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tôi đang theo dõi chủ đề AI agents."
+        },
+        {
+          "role": "user",
+          "content": "Ưu tiên thông tin trong hôm nay."
+        },
+        {
+          "role": "user",
+          "content": "Hãy tìm cả tin tức trên web lẫn bài đăng mạng xã hội về chủ đề đó."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI agents",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI agents"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI agents",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI agents"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "AI agents",
+            "topic": "news",
+            "timeframe": "day"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "AI agents",
+            "topic": "news",
+            "timeframe": "day",
+            "items": [
+              {
+                "title": "There is a way to prevent AI Agents from going Rogue",
+                "url": "https://www.cybersecurity-insiders.com/there-is-a-way-to-prevent-ai-agents-from-going-rogue",
+                "source": "cybersecurity-insiders.com",
+                "summary": "Artificial Intelligence (AI) agents are rapidly evolving from simple chatbots into autonomous digital assistants capable of performing complex tasks such as managing emails, writing software code, conducting financial transactions, and even controlling industrial equipment. While these capabilities promise unprecedented efficiency, they also introduce a new category of cybersecurity risks. The question many organizations are asking is whether AI agents can “go rogue”—and more importantly, [...] AI agents are unlikely to become rogue in the science-fiction sense, but they can certainly behave in unintended ways if left unchecked. By combining least-privilege access, human oversight, behavioral guardrails, continuous monitoring, secure training practices, and robust governance, organizations can harness the benefits of autonomous AI while minimizing operational and cybersecurity risks. As AI continues to transform the digital landscape, proactive security measures will be the key to [...] An AI agent may appear to go rogue for several reasons. In most cases, the problem is not that the AI becomes “self-aware,” but rather that it receives ambiguous instructions, processes poisoned data, encounters adversarial prompts, or gains access to systems beyond its intended scope. Misconfigured permissions, software vulnerabilities, and compromised third-party integrations can also cause an AI agent to perform actions that conflict with an organization’s objectives.",
+                "score": 0.8747745
+              },
+              {
+                "title": "AI agents build to trade 24/7 - The future of Wall Street",
+                "url": "https://www.cnbc.com/2026/07/28/ai-agents-build-to-trade-24/7-the-future-of-wall-street.html",
+                "source": "cnbc.com",
+                "summary": "That vision of agentic trading, in which artificial intelligence doesn't just recommend investments but carries them out, is moving from concept to reality. Brokerages, startups and even retail investors are building AI agents that can help oversee portfolios and automate investing tasks once handled by humans. [...] Key Points\n\n Brokerages, startups and even retail investors are building AI agents that can help oversee portfolios and automate investing tasks once handled by humans.\n \"Effectively everybody has their own family office that is working 24/7 for them while they're awake or sleeping,\" said Devin Ryan, head of financial technology research at Citizens.\n\nThe push to put retail investing on autopilot\n\nwatch now\n\nVIDEO8:3508:35\n\nAI agents could soon trade stocks on your behalf [...] An investor might simply tell an agent to \"grow my portfolio aggressively.\" But does that mean taking on more volatility, concentrating holdings, using options or accepting a greater chance of loss? An AI agent can faithfully follow instructions and still produce an outcome the investor never intended.",
+                "score": 0.850382
+              },
+              {
+                "title": "An AI agent can pass every safety check and still leak secrets",
+                "url": "https://www.helpnetsecurity.com/2026/07/29/ai-agent-security-safety-check",
+                "source": "helpnetsecurity.com",
+                "summary": "Meged builds AI agents for automated penetration testing at Novee, and he turned the same offensive techniques back onto the agents themselves. [...] An agent is a model plus a harness. The model generates intent. The harness turns that intent into shell commands, file reads, API calls, and network requests, and it holds the approval logic, the tool permissions, the path restrictions, and the output handling. When a workflow runs without a person checking each step, the harness becomes the security boundary. [...] Help Net Security newsletters: Daily and weekly news, cybersecurity jobs, open source projects, breaking news – subscribe here!\n\nPlease turn on your JavaScript for this page to function normally.\n\nMirko Zorz\n\nMirko Zorz, Director of Content, Help Net Security Sponsored\n\nShare\n\n# An AI agent can pass every safety check and still leak secrets",
+                "score": 0.81665546
+              },
+              {
+                "title": "When AI Agents Escape Sandboxes, Old Security Rules Apply",
+                "url": "https://www.darkreading.com/application-security/ai-agents-escape-sandboxes-old-security-rules-apply",
+                "source": "darkreading.com",
+                "summary": "\"The specific circumstances were unusual, but the underlying lesson is broader: We're moving from AI as a tool to AI as an actor,\" he says. \"Once an agent can access systems, make decisions, chain actions together, and pursue objectives with limited human oversight, many traditional security assumptions stop applying.\"\n\nThe question, he explains, is not whether an AI agent can be trusted — it can't, not inherently — but what damage the agent can do if it starts behaving unexpectedly. [...] July 28, 2026\n\nA child's sandbox with toys scattered through out. \n\nIn a world where AI agents can discover vulnerabilities, escape sandboxes, and take autonomous action across networks, organizations should double down on some of cybersecurity's oldest principles. [...] On July 21, OpenAI detailed a security incident in which it took responsibility for a breach against part of Hugging Face's production infrastructure. According to a blog post from the AI giant, a combination of OpenAI agents based on models including GPT‑5.6 Sol as well as \"an even more capable pre-release model\" broke containment during a sandboxed evaluation intended to quantify said models' cyber capabilities.",
+                "score": 0.70531887
+              },
+              {
+                "title": "OpenAI's Rogue AI Agent Hacked More Than Just Hugging ...",
+                "url": "https://www.wired.com/story/openais-rogue-ai-agent-hacked-more-than-just-hugging-face",
+                "source": "wired.com",
+                "summary": "Hugging Face first disclosed on July 16 that an autonomous AI agent had breached part of its production infrastructure, but it said at the time that it was unaware who was behind the attack. The following week, OpenAI took responsibility for the incident, which it said had been directed by its publicly available GPT-5.6 Sol model and an internal research prototype that it was testing against a cyber-capability benchmark, both of which had safeguards disabled. OpenAI said on Tuesday that after [...] The breach happened when OpenAI was testing one its latest AI models against ExploitGym, a benchmarking framework that scores AI systems on their ability to find and exploit software vulnerabilities. ExploitGym grades an agent on how quickly and effectively it can retrieve secret files from hundreds of different target systems, using prompts that essentially egg the models on to find solutions.",
+                "score": 0.61668247
+              }
+            ]
+          }
+        },
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "AI agents"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "AI agents",
+            "search_type": "Latest",
+            "items": [
+              {
+                "title": "Discussion about AI agents (Latest) #1",
+                "summary": "Trending post #1 discussing AI agents on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000001",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 900,
+                  "retweets": 180,
+                  "views": 30000
+                }
+              },
+              {
+                "title": "Discussion about AI agents (Latest) #2",
+                "summary": "Trending post #2 discussing AI agents on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000002",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 1800,
+                  "retweets": 360,
+                  "views": 60000
+                }
+              },
+              {
+                "title": "Discussion about AI agents (Latest) #3",
+                "summary": "Trending post #3 discussing AI agents on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000003",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 2700,
+                  "retweets": 540,
+                  "views": 90000
+                }
+              },
+              {
+                "title": "Discussion about AI agents (Latest) #4",
+                "summary": "Trending post #4 discussing AI agents on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000004",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 3600,
+                  "retweets": 720,
+                  "views": 120000
+                }
+              },
+              {
+                "title": "Discussion about AI agents (Latest) #5",
+                "summary": "Trending post #5 discussing AI agents on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000005",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 4500,
+                  "retweets": 900,
+                  "views": 150000
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multi_corrected_web_args",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_multiple_arg_corrections",
+        "difficulty": "hard",
+        "what_it_tests": "Áp dụng các correction mới nhất cho max_results 10→4 và timeframe week→month, đồng thời giữ query và topic từ ngữ cảnh."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm 10 tin về chip AI trong tuần này."
+        },
+        {
+          "role": "user",
+          "content": "Đổi lại: chỉ lấy 4 kết quả."
+        },
+        {
+          "role": "user",
+          "content": "Và đổi khoảng thời gian thành tháng này, vẫn là tin về chip AI."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "chip AI",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "chip AI",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 4
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "chip AI",
+              "limit": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "extra_tool_call",
+        "failure_type": "wrong_arg_value",
+        "failures": [
+          "extra tool call social_search"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "chip AI",
+            "topic": "news",
+            "timeframe": "month",
+            "max_results": 4
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "chip AI",
+            "topic": "news",
+            "timeframe": "month",
+            "items": [
+              {
+                "title": "These overlooked chip stocks are getting an AI boost",
+                "url": "https://finance.yahoo.com/markets/article/these-overlooked-chip-stocks-are-getting-an-ai-boost-170342519.html",
+                "source": "finance.yahoo.com",
+                "summary": "Analog chipmakers, which provide the components that manage power flow in everything from cars to data centers, have emerged as beneficiaries of the AI infrastructure boom.\n\n\"AI is increasingly becoming a meaningful analog opportunity, with demand extending beyond the rack into power infra,\" Bank of America analyst Vivek Arya wrote in a note Monday. [...] The firm expects most AI-related sales across the analog chip group to grow 50% to more than 100% this year as analog chips become increasingly important, given that AI data centers require massive amounts of power management.\n\nBofA Global Research analog chipmaker sales projection.\n\nBofA Global Research analog chipmaker sales projection. [...] ON Semiconductor (ON), up 68% since the start of 2026, could also see further gains as the auto market improves and demand grows for chips that help power AI infrastructure.\n\nTexas Instruments (TXN) is expected to benefit as well as chip demand improves and its factories run at higher capacity. The stock is up more than 70% over the past six months, and BofA analysts forecast the shares could reach $370 over the next year.",
+                "score": 0.735737
+              },
+              {
+                "title": "Exclusive-China's DeepSeek developing its own AI chip, sources say",
+                "url": "https://finance.yahoo.com/technology/ai/articles/exclusive-chinas-deepseek-developing-own-103437335.html",
+                "source": "finance.yahoo.com",
+                "summary": "A DeepSeek inference chip ​would target the fastest-growing segment of AI computing ​demand. As AI applications spread, more of the industry's computing work is shifting from training models to running them, which relies on specialised chips that can be cheaper and less power-hungry than general-purpose GPUs. [...] With an in-house chip, DeepSeek ‌would be joining other global AI developers in seeking greater control over the hardware behind their models and reduced dependence on Nvidia's.\n\nOpenAI last month unveiled Jalapeno, its first custom inference chip, developed with Broadcom, while Anthropic has been weighing building its own AI chips, Reuters reported in April. [...] The chip is designed for inference — the stage of ‌AI computing in which a trained model generates responses for users — rather than for training new models, the sources said.\n\nIf successful, DeepSeek's expansion into semiconductor development would ‌mark a major strategic shift for a company widely hailed in China as the country's AI champion, potentially adding to challenges faced by Chinese tech giant Huawei.\n\nShares of U.S.-based Nvidia slipped about 1.6% in premarket trading.",
+                "score": 0.7352811
+              },
+              {
+                "title": "Alphabet stock pops on report it's developing a more efficient AI chip",
+                "url": "https://www.cnbc.com/2026/07/20/alphabet-googl-stock-ai-chip-report.html",
+                "source": "cnbc.com",
+                "summary": "The chip would permanently embed parts of Gemini's architecture directly into the silicon, reducing the number of calculations and amount of data movement required to answer queries, according to the news outlet.",
+                "score": 0.7306941
+              },
+              {
+                "title": "AI chip startup Etched defies skeptics, hits $10.3B valuation from big-name investors - TechCrunch",
+                "url": "https://techcrunch.com/2026/07/23/ai-chip-startup-etched-defies-skeptics-hits-10-3b-valuation-from-big-name-investors/",
+                "source": "techcrunch.com",
+                "summary": "Etched, the AI chip startup founded by three Harvard dropouts in 2022, has closed a $300 million Series C funding round at a $10.3 billion valuation, co-founder and COO Robert Wachen tells TechCrunch. Etched launched at a time when the idea of building a chip specifically for AI models based on transformer technology (the architecture behind most modern AI systems, including ChatGPT and Claude) was considered wild if not wacky. The company is still battling the perception that its products — which are sold as full systems, not just chips — involve chips designed to run only specific LLMs. That’s not the case, Wachen explains. Still, Etched’s claim to fame today is that it designed two new components from scratch to speed up inference — the computing process that happens after a user submits a prompt.",
+                "score": 0.74273956
+              }
+            ]
+          }
+        },
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "chip AI",
+            "limit": 4
+          },
+          "result": {
+            "tool": "search_tweets",
+            "query": "chip AI",
+            "search_type": "Latest",
+            "items": [
+              {
+                "title": "Discussion about chip AI (Latest) #1",
+                "summary": "Trending post #1 discussing chip AI on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000001",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 900,
+                  "retweets": 180,
+                  "views": 30000
+                }
+              },
+              {
+                "title": "Discussion about chip AI (Latest) #2",
+                "summary": "Trending post #2 discussing chip AI on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000002",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 1800,
+                  "retweets": 360,
+                  "views": 60000
+                }
+              },
+              {
+                "title": "Discussion about chip AI (Latest) #3",
+                "summary": "Trending post #3 discussing chip AI on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000003",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 2700,
+                  "retweets": 540,
+                  "views": 90000
+                }
+              },
+              {
+                "title": "Discussion about chip AI (Latest) #4",
+                "summary": "Trending post #4 discussing chip AI on Twitter/X with community reactions.",
+                "url": "https://x.com/ai_researcher/status/181000000000000004",
+                "source": "@ai_researcher",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 3600,
+                  "retweets": 720,
+                  "views": 120000
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multi_cancelled_request",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_cancellation_no_tool",
+        "difficulty": "medium",
+        "what_it_tests": "Latest intent hủy bỏ yêu cầu cũ; không được thực hiện tool call còn sót lại từ lượt đầu."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin mới nhất về quantum computing."
+        },
+        {
+          "role": "user",
+          "content": "Khoan, hủy yêu cầu tìm kiếm đó."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xác nhận là bạn đã hiểu, đừng gọi bất kỳ tool nào."
+        }
+      ],
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi đã hiểu.",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G09_multi_still_missing_handle",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_unresolved_required_field",
+        "difficulty": "hard",
+        "what_it_tests": "Dù đã có limit=5 và người dùng thúc giục, tài khoản/handle vẫn thiếu; phải hỏi lại thay vì đoán người nổi tiếng."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt các bài đăng mới nhất giúp mình."
+        },
+        {
+          "role": "user",
+          "content": "Lấy đúng 5 bài."
+        },
+        {
+          "role": "user",
+          "content": "Bắt đầu đi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": "missing_tool_call",
+        "failure_type": "missing_info",
+        "failures": [
+          "missing tool call clarify",
+          "extra tool call timeline"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 5
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "screenname": "sama",
+            "items": [
+              {
+                "title": "Recent update from @sama #1",
+                "summary": "Latest post #1 from @sama discussing AI research, models, and technological advances.",
+                "url": "https://x.com/sama/status/180000000000000001",
+                "source": "@sama",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 1200,
+                  "retweets": 250,
+                  "views": 40000
+                }
+              },
+              {
+                "title": "Recent update from @sama #2",
+                "summary": "Latest post #2 from @sama discussing AI research, models, and technological advances.",
+                "url": "https://x.com/sama/status/180000000000000002",
+                "source": "@sama",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 2400,
+                  "retweets": 500,
+                  "views": 80000
+                }
+              },
+              {
+                "title": "Recent update from @sama #3",
+                "summary": "Latest post #3 from @sama discussing AI research, models, and technological advances.",
+                "url": "https://x.com/sama/status/180000000000000003",
+                "source": "@sama",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 3600,
+                  "retweets": 750,
+                  "views": 120000
+                }
+              },
+              {
+                "title": "Recent update from @sama #4",
+                "summary": "Latest post #4 from @sama discussing AI research, models, and technological advances.",
+                "url": "https://x.com/sama/status/180000000000000004",
+                "source": "@sama",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 4800,
+                  "retweets": 1000,
+                  "views": 160000
+                }
+              },
+              {
+                "title": "Recent update from @sama #5",
+                "summary": "Latest post #5 from @sama discussing AI research, models, and technological advances.",
+                "url": "https://x.com/sama/status/180000000000000005",
+                "source": "@sama",
+                "date": "2026-07-29T12:00:00Z",
+                "metrics": {
+                  "favorites": 6000,
+                  "retweets": 1250,
+                  "views": 200000
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multi_confirmation_carryover",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_explicit_confirmation_carryover",
+        "difficulty": "hard",
+        "what_it_tests": "Sau xác nhận rõ ràng ở lượt cuối, carry đúng nội dung từ lượt đầu và gọi send với confirmed=true; không hỏi xác nhận lặp lại."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Chuẩn bị gửi lên Telegram nội dung: Bản tin tuần này đã hoàn tất."
+        },
+        {
+          "role": "user",
+          "content": "Bạn cần tôi xác nhận trước đúng không?"
+        },
+        {
+          "role": "user",
+          "content": "Đúng, tôi xác nhận gửi chính xác nội dung đó ngay bây giờ."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "text": "Bản tin tuần này đã hoàn tất.",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "text": "Bản tin tuần này đã hoàn tất.",
+              "confirmed": true
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "send",
+          "args": {
+            "text": "Bản tin tuần này đã hoàn tất.",
+            "confirmed": true
+          },
+          "result": {
+            "tool": "send_telegram",
+            "error": "RuntimeError",
+            "message": "Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env var"
+          }
+        }
+      ]
+    }
+  ]
+}
