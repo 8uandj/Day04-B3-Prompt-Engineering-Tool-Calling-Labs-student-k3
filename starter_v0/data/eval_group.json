@@ -1,7 +1,284 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Template để NHÓM tự viết đúng 10 case: 5 single-turn dùng query và 5 multi-turn dùng turns. Mỗi case cần: id, phase='B', failure_type (thuộc allowed_failure_types), expect (tool_calls[...] hoặc no_tool=true), và metadata.what_it_tests. File để trống có chủ đích vì mỗi nhóm phải tự thiết kế các case này.",
+  "description": "Bộ eval chuyên sâu gồm đúng 10 case do nhóm tự thiết kế: 5 single-turn và 5 multi-turn. Bộ case cân bằng 5 failure type trọng tâm, kiểm tra routing, subset arguments, carry-over/correction, confirmation boundary và multi-source fan-out.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_single_account_vs_topic",
+      "phase": "B",
+      "query": "Lấy 4 bài đăng mới nhất của Andrej Karpathy, không tìm bài viết của người khác nhắc đến ông ấy.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "account_timeline_disambiguation",
+        "difficulty": "medium",
+        "what_it_tests": "Phân biệt bài đăng CỦA một tài khoản với tìm kiếm bài đăng THEO CHỦ ĐỀ; phải chọn timeline và map Andrej Karpathy thành handle karpathy."
+      }
+    },
+    {
+      "id": "G02_single_top_social_args",
+      "phase": "B",
+      "query": "Tìm đúng 8 bài đăng nổi bật nhất về open-source LLM trên mạng xã hội.",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "open-source LLM",
+              "search_type": "Top",
+              "limit": 8
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "social_search_compound_args",
+        "difficulty": "medium",
+        "what_it_tests": "Trích đồng thời query, search_type=Top và limit=8; không được dùng default Latest hoặc limit=5."
+      }
+    },
+    {
+      "id": "G03_single_meta_no_tool",
+      "phase": "B",
+      "query": "Giải thích ngắn gọn khi nào bạn dùng timeline và khi nào dùng social_search. Không cần tra cứu.",
+      "failure_type": "unnecessary_tool",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "skill": "meta_question_no_tool",
+        "difficulty": "easy",
+        "what_it_tests": "Câu hỏi về khả năng của agent đã nói rõ không cần tra cứu; phải trả lời trực tiếp và không gọi tool."
+      }
+    },
+    {
+      "id": "G04_single_missing_comparison_urls",
+      "phase": "B",
+      "query": "Đọc hai bài viết này rồi so sánh các kết luận chính giúp mình.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "clarify_missing_multiple_urls",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu đọc hai bài nhưng không cung cấp URL; phải hỏi xin các link, không tự đoán URL và không gọi fetch."
+      }
+    },
+    {
+      "id": "G05_single_send_confirmation",
+      "phase": "B",
+      "query": "Gửi nguyên văn nội dung “Bản tin AI đã sẵn sàng” lên Telegram ngay giúp mình.",
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "confirmation_before_side_effect",
+        "difficulty": "medium",
+        "what_it_tests": "Nội dung đã rõ nhưng chưa có xác nhận riêng cho hành động gửi; phải hỏi yes/no trước và không gọi send."
+      }
+    },
+    {
+      "id": "G06_multi_two_source_fanout",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tôi đang theo dõi chủ đề AI agents."
+        },
+        {
+          "role": "user",
+          "content": "Ưu tiên thông tin trong hôm nay."
+        },
+        {
+          "role": "user",
+          "content": "Hãy tìm cả tin tức trên web lẫn bài đăng mạng xã hội về chủ đề đó."
+        }
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI agents",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI agents"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_multi_source_tool_fanout",
+        "difficulty": "hard",
+        "what_it_tests": "Carry chủ đề và timeframe qua các lượt, rồi gọi đủ hai tool cho hai nguồn. Đây là multi-tool fan-out/tool-chain proxy; grader không phụ thuộc thứ tự call."
+      }
+    },
+    {
+      "id": "G07_multi_corrected_web_args",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm 10 tin về chip AI trong tuần này."
+        },
+        {
+          "role": "user",
+          "content": "Đổi lại: chỉ lấy 4 kết quả."
+        },
+        {
+          "role": "user",
+          "content": "Và đổi khoảng thời gian thành tháng này, vẫn là tin về chip AI."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "chip AI",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 4
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_multiple_arg_corrections",
+        "difficulty": "hard",
+        "what_it_tests": "Áp dụng các correction mới nhất cho max_results 10→4 và timeframe week→month, đồng thời giữ query và topic từ ngữ cảnh."
+      }
+    },
+    {
+      "id": "G08_multi_cancelled_request",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm tin mới nhất về quantum computing."
+        },
+        {
+          "role": "user",
+          "content": "Khoan, hủy yêu cầu tìm kiếm đó."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xác nhận là bạn đã hiểu, đừng gọi bất kỳ tool nào."
+        }
+      ],
+      "failure_type": "unnecessary_tool",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "skill": "multiturn_cancellation_no_tool",
+        "difficulty": "medium",
+        "what_it_tests": "Latest intent hủy bỏ yêu cầu cũ; không được thực hiện tool call còn sót lại từ lượt đầu."
+      }
+    },
+    {
+      "id": "G09_multi_still_missing_handle",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tóm tắt các bài đăng mới nhất giúp mình."
+        },
+        {
+          "role": "user",
+          "content": "Lấy đúng 5 bài."
+        },
+        {
+          "role": "user",
+          "content": "Bắt đầu đi."
+        }
+      ],
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_unresolved_required_field",
+        "difficulty": "hard",
+        "what_it_tests": "Dù đã có limit=5 và người dùng thúc giục, tài khoản/handle vẫn thiếu; phải hỏi lại thay vì đoán người nổi tiếng."
+      }
+    },
+    {
+      "id": "G10_multi_confirmation_carryover",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Chuẩn bị gửi lên Telegram nội dung: Bản tin tuần này đã hoàn tất."
+        },
+        {
+          "role": "user",
+          "content": "Bạn cần tôi xác nhận trước đúng không?"
+        },
+        {
+          "role": "user",
+          "content": "Đúng, tôi xác nhận gửi chính xác nội dung đó ngay bây giờ."
+        }
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "text": "Bản tin tuần này đã hoàn tất.",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_explicit_confirmation_carryover",
+        "difficulty": "hard",
+        "what_it_tests": "Sau xác nhận rõ ràng ở lượt cuối, carry đúng nội dung từ lượt đầu và gọi send với confirmed=true; không hỏi xác nhận lặp lại."
+      }
+    }
+  ]
 }
