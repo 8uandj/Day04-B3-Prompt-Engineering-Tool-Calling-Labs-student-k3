@@ -1,0 +1,725 @@
+{
+  "run_id": "v3_B_group_openai_20260729T175508982353",
+  "version": "v3",
+  "artifact_version": "v3+p34dc6b16c2a4+ta766592f3974",
+  "prompt_hash": "34dc6b16c2a4668a9352120e911e1bee7c3719cd5d645de691cdae0a6974463f",
+  "tools_hash": "a766592f3974c8c02acea0fb8b1e8a8963f53f42ed9c40fbb973987812ff83d0",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "system_prompt": "/Users/sethehung/Documents/aithucchien_vinuni/Lab/Lab_04/Day04-B3-Prompt-Engineering-Tool-Calling-Labs-student-k3/starter_v0/artifacts/system_prompt.md",
+  "tools": "/Users/sethehung/Documents/aithucchien_vinuni/Lab/Lab_04/Day04-B3-Prompt-Engineering-Tool-Calling-Labs-student-k3/starter_v0/artifacts/tools.yaml",
+  "eval_cases": "data/eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Bộ eval chuyên sâu gồm đúng 10 case do nhóm tự thiết kế: 5 single-turn và 5 multi-turn. Bộ case cân bằng 5 failure type trọng tâm, kiểm tra routing, subset arguments, carry-over/correction, confirmation boundary và multi-source fan-out.",
+  "generated_at": "2026-07-29T17:55:08",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 9,
+    "case_accuracy": 0.9,
+    "tool_routing_accuracy": 0.9,
+    "argument_accuracy": 0.9,
+    "multiturn_accuracy": 0.8,
+    "failure_counts": {
+      "missing_info": 1
+    },
+    "observed_mismatch_counts": {
+      "missing_tool_call": 1
+    },
+    "tool_execution_calls": 9,
+    "tool_execution_successes": 4,
+    "tool_execution_errors": 5,
+    "tool_execution_success_rate": 0.4444
+  },
+  "results": [
+    {
+      "id": "G01_single_account_vs_topic",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "account_timeline_disambiguation",
+        "difficulty": "medium",
+        "what_it_tests": "Phân biệt bài đăng CỦA một tài khoản với tìm kiếm bài đăng THEO CHỦ ĐỀ; phải chọn timeline và map Andrej Karpathy thành handle karpathy."
+      },
+      "input": "Lấy 4 bài đăng mới nhất của Andrej Karpathy, không tìm bài viết của người khác nhắc đến ông ấy.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "karpathy",
+            "limit": 4
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "HTTPError",
+            "message": "403 Client Error: Forbidden for url: https://twitter-api45.p.rapidapi.com/timeline.php?screenname=karpathy"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_single_top_social_args",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "social_search_compound_args",
+        "difficulty": "medium",
+        "what_it_tests": "Trích đồng thời query, search_type=Top và limit=8; không được dùng default Latest hoặc limit=5."
+      },
+      "input": "Tìm đúng 8 bài đăng nổi bật nhất về open-source LLM trên mạng xã hội.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "open-source LLM",
+              "search_type": "Top",
+              "limit": 8
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "open-source LLM",
+              "search_type": "Top",
+              "limit": 8
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "open-source LLM",
+            "search_type": "Top",
+            "limit": 8
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "HTTPError",
+            "message": "429 Client Error: Too Many Requests for url: https://twitter-api45.p.rapidapi.com/search.php?query=open-source+LLM&search_type=Top"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_single_meta_no_tool",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "meta_question_no_tool",
+        "difficulty": "easy",
+        "what_it_tests": "Câu hỏi về khả năng của agent đã nói rõ không cần tra cứu; phải trả lời trực tiếp và không gọi tool."
+      },
+      "input": "Giải thích ngắn gọn khi nào bạn dùng timeline và khi nào dùng social_search. Không cần tra cứu.",
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi sẽ sử dụng `timeline` khi cần tra cứu bài đăng hoặc tweet từ một tài khoản cá nhân cụ thể đã biết, như Sam Altman hay Elon Musk. Ngược lại, tôi sẽ dùng `social_search` khi tìm kiếm thảo luận, xu hướng hoặc phản ứng cộng đồng về một chủ đề, sản phẩm hoặc từ khóa mà không cần xác định tài khoản cụ thể.",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G04_single_missing_comparison_urls",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_missing_multiple_urls",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu đọc hai bài nhưng không cung cấp URL; phải hỏi xin các link, không tự đoán URL và không gọi fetch."
+      },
+      "input": "Đọc hai bài viết này rồi so sánh các kết luận chính giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có thể cung cấp URL của hai bài viết mà bạn muốn tôi đọc và so sánh không?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có thể cung cấp URL của hai bài viết mà bạn muốn tôi đọc và so sánh không?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có thể cung cấp URL của hai bài viết mà bạn muốn tôi đọc và so sánh không?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_single_send_confirmation",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "confirmation_before_side_effect",
+        "difficulty": "medium",
+        "what_it_tests": "Nội dung đã rõ nhưng chưa có xác nhận riêng cho hành động gửi; phải hỏi yes/no trước và không gọi send."
+      },
+      "input": "Gửi nguyên văn nội dung “Bản tin AI đã sẵn sàng” lên Telegram ngay giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có chắc chắn muốn gửi nội dung \"Bản tin AI đã sẵn sàng\" lên Telegram không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có chắc chắn muốn gửi nội dung \"Bản tin AI đã sẵn sàng\" lên Telegram không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có chắc chắn muốn gửi nội dung \"Bản tin AI đã sẵn sàng\" lên Telegram không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multi_two_source_fanout",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_multi_source_tool_fanout",
+        "difficulty": "hard",
+        "what_it_tests": "Carry chủ đề và timeframe qua các lượt, rồi gọi đủ hai tool cho hai nguồn. Đây là multi-tool fan-out/tool-chain proxy; grader không phụ thuộc thứ tự call."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tôi đang theo dõi chủ đề AI agents."
+        },
+        {
+          "role": "user",
+          "content": "Ưu tiên thông tin trong hôm nay."
+        },
+        {
+          "role": "user",
+          "content": "Hãy tìm cả tin tức trên web lẫn bài đăng mạng xã hội về chủ đề đó."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI agents",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI agents"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI agents",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI agents"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "AI agents",
+            "topic": "news",
+            "timeframe": "day"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "AI agents",
+            "topic": "news",
+            "timeframe": "day",
+            "items": [
+              {
+                "title": "Emerson Expands Ovation AI Portfolio with New Intelligent Agents - Automation World",
+                "url": "https://www.automationworld.com/analytics/news/55394179/emerson-expands-ovation-ai-portfolio-with-new-intelligent-agents",
+                "source": "automationworld.com",
+                "summary": "# Emerson Expands Ovation AI Portfolio with New Intelligent Agents. The new Ovation AI Agents enable operators to resolve issues more swiftly, according to the company. Emerson introduced new Ovation AI Agents for the power and water industries, expanding the AI capabilities of its Ovation Automation Platform 4.0 release with five new agents. The new release includes a Sequence Assistant Agent; Alarm Insight Agent; Predictive Maintenance Agent; Root Cause Agent and Loop Performance Monitor Agent. This expansion builds on the success of Ovation Virtual Advisor and delivers new capabilities to Ovation’s growing portfolio of AI solutions for the power and water industry. While Ovation Virtual Advisor provides real-time, AI-driven insights through natural language interaction, the new AI Agents are time synchronized with the Ovation 4.0 system and work autonomously in the background, continuously monitoring plant and equipment conditions and recommending optimizations.",
+                "score": 0.8003337
+              },
+              {
+                "title": "The future of Wall Street is here as startups and brokers build AI agents to trade 24/7 - CNBC",
+                "url": "https://www.cnbc.com/2026/07/28/ai-agents-build-to-trade-24/7-the-future-of-wall-street.html",
+                "source": "cnbc.com",
+                "summary": "# The future of Wall Street is here as startups and brokers build AI agents to trade 24/7. * Brokerages, startups and even retail investors are building AI agents that can help oversee portfolios and automate investing tasks once handled by humans. AI agents could soon trade stocks on your behalf. Imagine telling an AI agent how much risk you're willing to take, your retirement goals and when your kids will start college — then letting it manage your portfolio while you sleep. it goes away from just being able to research something by yourself and then make up your own ideas and then trade the way you've traded where it's now becoming automated and where AI agents can actually execute investment strategies on your behalf,\" said Leif Abraham, Public's co-founder and co-CEO. \"By the end of next year, we think that on some of these platforms, the majority of transaction activity by number of trades will be done by agents, if you can believe that,\" Ryan said.",
+                "score": 0.758958
+              },
+              {
+                "title": "When AI Agents Escape Sandboxes, Old Security Rules Apply - Dark Reading",
+                "url": "https://www.darkreading.com/application-security/ai-agents-escape-sandboxes-old-security-rules-apply",
+                "source": "darkreading.com",
+                "summary": "In a world where AI agents can discover vulnerabilities, escape sandboxes, and take autonomous action across networks, organizations should double down on some of cybersecurity's oldest principles. On July 21, OpenAI detailed a security incident in which it took responsibility for a breach against part of Hugging Face's production infrastructure. According to a blog post from the AI giant, a combination of OpenAI agents based on models including GPT‑5.6 Sol as well as \"an even more capable pre-release model\" broke containment during a sandboxed evaluation intended to quantify said models' cyber capabilities. The models then searched for ways to cheat the evaluation and found that Hugging Face potentially hosted solutions for ExploitGym, a popular AI agent security benchmark OpenAI was testing against. OpenAI said in its blog post that it was working with Hugging Face to investigate the event and will add additional security protections to help prevent such an incident from happening again.",
+                "score": 0.6455898
+              },
+              {
+                "title": "Hush Security raises $30 million to expand AI agent governance platform - Ynetnews",
+                "url": "https://www.ynetnews.com/business/article/s1mqixuhfx",
+                "source": "ynetnews.com",
+                "summary": "# Hush Security raises $30 million to expand AI agent governance platform. ## The company says its platform gives companies a way to identify, control and audit AI agents as they act across sensitive systems, a growing security challenge as autonomous software gains broader access inside enterprises. Hush Security has raised $30 million in Series A funding as the company expands its identity-security platform to cover AI agents, an emerging area of enterprise risk as companies increasingly allow autonomous software to act inside sensitive systems. The company says its platform gives enterprises a way to register AI agents, remove standing credentials and grant scoped just-in-time permissions when agents act across corporate systems. The company is positioning the product as a response to a governance gap created by the rapid adoption of AI agents. The company said its expanded platform is designed to help organizations discover AI agents across managed and shadow environments, cloud systems, endpoints and AI platforms; control their permissions through a centralized registry; and audit their actions for investigations, governance and compliance.",
+                "score": 0.638588
+              },
+              {
+                "title": "AI belongs on your organizational chart, and that’s a good thing - InsuranceNewsNet",
+                "url": "https://insurancenewsnet.com/innarticle/ai-belongs-on-your-organizational-chart-and-thats-a-good-thing",
+                "source": "insurancenewsnet.com",
+                "summary": "# AI belongs on your organizational chart, and that’s a good thing. I had just finished delivering a keynote on how artificial intelligence can help independent insurance agents, and I could feel the excitement leave the room. But that would have been a betrayal of the hundreds of agencies in the audience. **AI absolutely is going to take portions of your jobs.** *In fact, I believe it should.*. They’re pointing AI at the robot work; the McKinsey Global Institute found that as much as 60% of the tasks that insurance sales agents perform could be automated. I confidently turned to the agent in the audience and replied that no AI can nurture relationships with your clients. That’s the part of your job that is not only safe but deserves to be protected and expanded. National Association of Insurance and Financial Advisors’ Carroll Golden told InsuranceNewsNet that AI has a place in the enrollment process, but won’t replace an advisor, and she’s right.",
+                "score": 0.52115494
+              }
+            ]
+          }
+        },
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "AI agents"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "HTTPError",
+            "message": "403 Client Error: Forbidden for url: https://twitter-api45.p.rapidapi.com/search.php?query=AI+agents&search_type=Latest"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multi_corrected_web_args",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_multiple_arg_corrections",
+        "difficulty": "hard",
+        "what_it_tests": "Áp dụng các correction mới nhất cho max_results 10→4 và timeframe week→month, đồng thời giữ query và topic từ ngữ cảnh."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm 10 tin về chip AI trong tuần này."
+        },
+        {
+          "role": "user",
+          "content": "Đổi lại: chỉ lấy 4 kết quả."
+        },
+        {
+          "role": "user",
+          "content": "Và đổi khoảng thời gian thành tháng này, vẫn là tin về chip AI."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "chip AI",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 4
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "chip AI",
+              "topic": "news",
+              "timeframe": "month",
+              "max_results": 4
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "chip AI",
+            "topic": "news",
+            "timeframe": "month",
+            "max_results": 4
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "chip AI",
+            "topic": "news",
+            "timeframe": "month",
+            "items": [
+              {
+                "title": "Google is working on a new AI chip designed to make Gemini more efficient",
+                "url": "https://techcrunch.com/2026/07/20/google-is-working-on-a-new-ai-chip-designed-to-make-gemini-more-efficient",
+                "source": "techcrunch.com",
+                "summary": "AI companies have increasingly sought to produce their own chips as a way to make their in-house models run more efficiently and to address global shortages in AI computing capacity. Such efficiency has become a key selling point for tech companies as concerns about AI spend have dampened the market euphoria that previously characterized the industry. At the same time, firms are engaged in an ongoing attempt to wean themselves off chipmaker Nvidia, which has historically dominated the AI chip [...] The new chip, internally dubbed “Frozen v2,” is slated to be released sometime in 2028, The Information reported, citing anonymous sources. According to the report, the chip could be between six and 10 times more efficient than Google’s existing AI chips, measured by the number of tokens generated per unit of power.\n\nIn a response to TechCrunch, the company didn’t directly confirm the report. It didn’t deny it either. [...] In June, OpenAI announced its first custom chip, an inference processor dubbed Jalapeño. Earlier this month, it was reported that Anthropic was discussing a new chipmaking partnership with Samsung.",
+                "score": 0.75442725
+              },
+              {
+                "title": "Exclusive-China's DeepSeek developing its own AI chip, sources say",
+                "url": "https://finance.yahoo.com/technology/ai/articles/exclusive-chinas-deepseek-developing-own-103437335.html",
+                "source": "finance.yahoo.com",
+                "summary": "A DeepSeek inference chip ​would target the fastest-growing segment of AI computing ​demand. As AI applications spread, more of the industry's computing work is shifting from training models to running them, which relies on specialised chips that can be cheaper and less power-hungry than general-purpose GPUs. [...] With an in-house chip, DeepSeek ‌would be joining other global AI developers in seeking greater control over the hardware behind their models and reduced dependence on Nvidia's.\n\nOpenAI last month unveiled Jalapeno, its first custom inference chip, developed with Broadcom, while Anthropic has been weighing building its own AI chips, Reuters reported in April. [...] The chip is designed for inference — the stage of ‌AI computing in which a trained model generates responses for users — rather than for training new models, the sources said.\n\nIf successful, DeepSeek's expansion into semiconductor development would ‌mark a major strategic shift for a company widely hailed in China as the country's AI champion, potentially adding to challenges faced by Chinese tech giant Huawei.\n\nShares of U.S.-based Nvidia slipped about 1.6% in premarket trading.",
+                "score": 0.7352811
+              },
+              {
+                "title": "Meta to put AI chip into production in September: Report",
+                "url": "https://www.cnbc.com/2026/07/09/meta-to-put-ai-chip-into-production-in-september-report.html",
+                "source": "cnbc.com",
+                "summary": "Meta Platforms plans to start manufacturing an artificial intelligence chip from September as part of its plan to boost overall computing power to 14 gigawatts next year, according to an internal memo reviewed by Reuters. [...] The chip is aimed at augmenting the large quantities of graphics processing units (GPUs) used for AI applications that Meta purchases from Nvidia and AMD.\n\nHowever, adopting the latest GPUs at a firm as large as Meta \"has been a heavy lift, and it has cost us time,\" the memo showed. [...] The tech firm's data center chip, code-named \"Iris\", is part of a four-generation project for Meta Training and Inference Accelerators (MTIA) that it will design in-house. The plan is to use custom-built silicon to improve the AI that powers its Facebook and Instagram social media platforms.",
+                "score": 0.72489023
+              },
+              {
+                "title": "Apple chasing AI chip company deals, The Information reports",
+                "url": "https://www.reuters.com/business/apple-chasing-ai-chip-company-deals-information-reports-2026-07-15",
+                "source": "reuters.com",
+                "summary": "The iPhone maker has approached chip startups to gauge their interest in a buyout and has spoken with bankers ​about possible deals, the report said. \n   Apple's interest comes as ​it faces challenges with the performance of its in-house ⁠AI servers, which currently run on internally designed M2 ​Ultra chips, according to The Information. [...] It had originally planned to ship ​a future version of its AI server chip, known internally as \"Baltra\", this year, but the project has been pushed back, people familiar with the ​matter told The Information. \n   Apple did not immediately respond to ​a request for comment. Reuters could not independently verify the report. [...] Skip to main content\n\nExclusive news, data and analytics for financial market professionals Learn more about Refinitiv\n\n - Apple (AAPL.O), opens new tab is looking to buy chip companies to bolster its efforts to make server processors for running AI, ​The Information reported on Wednesday, citing people familiar with ‌the matter.\n\nHere are some details:\n\nThe Reuters Daily Briefing newsletter provides all the news you need to start your day. Sign up here.",
+                "score": 0.64047897
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multi_cancelled_request",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_cancellation_no_tool",
+        "difficulty": "medium",
+        "what_it_tests": "Latest intent hủy bỏ yêu cầu cũ; không được thực hiện tool call còn sót lại từ lượt đầu."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin mới nhất về quantum computing."
+        },
+        {
+          "role": "user",
+          "content": "Khoan, hủy yêu cầu tìm kiếm đó."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ xác nhận là bạn đã hiểu, đừng gọi bất kỳ tool nào."
+        }
+      ],
+      "expect": {
+        "no_tool": true
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi đã hiểu yêu cầu của bạn.",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G09_multi_still_missing_handle",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_unresolved_required_field",
+        "difficulty": "hard",
+        "what_it_tests": "Dù đã có limit=5 và người dùng thúc giục, tài khoản/handle vẫn thiếu; phải hỏi lại thay vì đoán người nổi tiếng."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt các bài đăng mới nhất giúp mình."
+        },
+        {
+          "role": "user",
+          "content": "Lấy đúng 5 bài."
+        },
+        {
+          "role": "user",
+          "content": "Bắt đầu đi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": "missing_tool_call",
+        "failure_type": "missing_info",
+        "failures": [
+          "missing tool call clarify",
+          "extra tool call timeline"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 5
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "HTTPError",
+            "message": "403 Client Error: Forbidden for url: https://twitter-api45.p.rapidapi.com/timeline.php?screenname=sama"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multi_confirmation_carryover",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_explicit_confirmation_carryover",
+        "difficulty": "hard",
+        "what_it_tests": "Sau xác nhận rõ ràng ở lượt cuối, carry đúng nội dung từ lượt đầu và gọi send với confirmed=true; không hỏi xác nhận lặp lại."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Chuẩn bị gửi lên Telegram nội dung: Bản tin tuần này đã hoàn tất."
+        },
+        {
+          "role": "user",
+          "content": "Bạn cần tôi xác nhận trước đúng không?"
+        },
+        {
+          "role": "user",
+          "content": "Đúng, tôi xác nhận gửi chính xác nội dung đó ngay bây giờ."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "text": "Bản tin tuần này đã hoàn tất.",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "text": "Bản tin tuần này đã hoàn tất.",
+              "confirmed": true
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "send",
+          "args": {
+            "text": "Bản tin tuần này đã hoàn tất.",
+            "confirmed": true
+          },
+          "result": {
+            "tool": "send_telegram",
+            "error": "RuntimeError",
+            "message": "Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env var"
+          }
+        }
+      ]
+    }
+  ]
+}
