@@ -5,7 +5,7 @@
 Tóm tắt một đoạn text dài (bài báo, nhiều bài đăng gộp lại, nội dung đã
 `fetch`/`readability`) thành N câu chính quan trọng nhất, dùng thuật toán
 extractive summarization (chọn ra câu quan trọng nhất trong văn bản gốc,
-không sinh câu mới). Không cần gọi API ngoài, chạy hoàn toàn local.
+không sinh câu mới). 
 
 ## Khi nào dùng
 
